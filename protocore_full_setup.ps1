@@ -1,5 +1,4 @@
-﻿# سكربت PowerShell لإنشاء موقع أرشيفي معرفي (PROTOCORE)
-# السكربت ينشئ الموقع، ويقوم بتوليد الإشارات، وتحديث المحتوى، ويرفع التحديثات على GitHub Pages
+﻿# سكربت PowerShell لتوليد إشارات معرفية يومية وتحسين الموقع
 
 # إعدادات المشروع
 $projectDir = [System.IO.Path]::Combine($env:USERPROFILE, "Desktop", "protocore") 
@@ -110,5 +109,3 @@ GenerateMultilingualSignal $today
 
 # تحديث GitHub Pages
 UpdateGitHubPages
-
-Write-Host "تم تنفيذ السكربت بنجاح! الموقع محدث على GitHub Pages."
