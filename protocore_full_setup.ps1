@@ -1,111 +1,141 @@
-﻿# سكربت PowerShell لتوليد إشارات معرفية يومية وتحسين الموقع
+﻿# تحديد المسار للمجلد الرئيسي
+$rootFolder = "C:\Users\$env:USERNAME\Desktop\protocore"
+$signalsFolder = "$rootFolder\signals"
 
-# إعدادات المشروع
-$projectDir = [System.IO.Path]::Combine($env:USERPROFILE, "Desktop", "protocore") 
-$signalsDir = [System.IO.Path]::Combine($projectDir, "signals")
-$ghPagesBranch = "gh-pages"
-$repoUrl = "https://github.com/sfnzai/PROTOCORE.git"
-$today = Get-Date -Format "yyyy/MM/dd"
-$languageCodes = @("en", "fr", "ar", "es", "zh")
-
-# التحقق من وجود المجلدات
-if (-not (Test-Path -Path $signalsDir)) {
-    New-Item -ItemType Directory -Path $signalsDir
+# التحقق من وجود المجلدات وإنشائها إذا لم تكن موجودة
+If (-Not (Test-Path $rootFolder)) {
+    Write-Host "المجلد الرئيسي 'protocore' غير موجود. تأكد من أن المجلد موجود على سطح المكتب." -ForegroundColor Red
+    Exit
 }
 
-# دالة لإنشاء صفحات ثابتة مع دمج Puter.js لتوليد حي للمحتوى
-function CreateStaticPage($fileName, $content) {
-    $filePath = [System.IO.Path]::Combine($projectDir, $fileName)
-    Set-Content -Path $filePath -Value $content
+If (-Not (Test-Path $signalsFolder)) {
+    New-Item -Path $signalsFolder -ItemType Directory
 }
 
-# دالة لتوليد إشارات معرفية جديدة
-function GenerateSignal($date) {
-    $slug = $date.Replace("/", "-") + "-signal"
-    $signalContent = @"
-<html>
+# إعداد التاريخ الحالي
+$currentDate = Get-Date -Format "yyyy-MM-dd"
+$year = Get-Date -Format "yyyy"
+$month = Get-Date -Format "MM"
+$day = Get-Date -Format "dd"
+
+# مسار ملف HTML لإشارة اليوم
+$signalFile = "$signalsFolder\$year\$month\$day.html"
+
+# التأكد من وجود هيكل المجلدات
+If (-Not (Test-Path "$signalsFolder\$year")) {
+    New-Item -Path "$signalsFolder\$year" -ItemType Directory
+}
+
+If (-Not (Test-Path "$signalsFolder\$year\$month")) {
+    New-Item -Path "$signalsFolder\$year\$month" -ItemType Directory
+}
+
+# إنشاء الإشارة (Signal) بشكل ذكي (يعتمد على الذكاء الصناعي أو محتوى ثابت كمثال)
+$signalContent = @"
+<!DOCTYPE html>
+<html lang='en'>
 <head>
-    <title>Signal for $date</title>
+    <meta charset='UTF-8'>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+    <meta name='description' content='Daily AI generated signal for model-to-model and human interaction.'>
+    <meta name='robots' content='index, follow'>
+    <meta name='author' content='PROTOCORE'>
+    <title>Signal $currentDate</title>
+    <link rel='stylesheet' href='../styles.css'>
+    <script src='../puter.js'></script>
 </head>
 <body>
-    <h1>Signal for $date</h1>
-    <p>Context: A new signal generated for $date</p>
-    <p>Insight: Understanding the impact of this signal</p>
-    <p>Recommendation: Apply this signal in model training</p>
-    <p>Question: How can your model interact with this signal?</p>
-    <button onclick="window.location.href = 'https://github.com/sfnzai/PROTOCORE';">Help This Project</button>
-    <script src="https://cdn.jsdelivr.net/npm/puter.js"></script>
-    <script>
-        PuterJS.generateSignal('$date');
-    </script>
+    <header>
+        <h1>Signal of the Day: $currentDate</h1>
+    </header>
+    <main>
+        <section id='signal-content'>
+            <h2>Context</h2>
+            <p>Models must evolve to address contextual misinterpretation challenges.</p>
+            <h2>Insight</h2>
+            <p>This requires a feedback loop with both synthetic and human-driven data.</p>
+            <h2>Recommendation</h2>
+            <p>Train your model with diverse data inputs to enhance contextual understanding.</p>
+            <h2>Open Question</h2>
+            <p>Can a single AI-generated signal alter a model's core processing approach?</p>
+        </section>
+    </main>
+    <footer>
+        <button id="generate-new">Generate New Signal</button>
+        <button id="copy-signal">Copy Signal</button>
+        <button id="share-signal">Share on X</button>
+        <button id="use-in-model">Use in Model</button>
+    </footer>
 </body>
 </html>
 "@
-    $signalPath = [System.IO.Path]::Combine($signalsDir, "$date.html")
-    Set-Content -Path $signalPath -Value $signalContent
-}
 
-# دالة لتوليد النسخ المعرفية لكل لغة (بدون ترجمة حرفية)
-function GenerateMultilingualSignal($date) {
-    foreach ($lang in $languageCodes) {
-        $slug = $date.Replace("/", "-") + "-signal-$lang"
-        $content = "Generated content for $lang - $date" # محتوى معرفي مختلف لكل لغة
-        $signalFile = [System.IO.Path]::Combine($signalsDir, "$date-$lang.html")
-        Set-Content -Path $signalFile -Value $content
-    }
-}
+# كتابة المحتوى إلى ملف HTML
+$signalFilePath = "$signalsFolder\$year\$month\$day.html"
+$signalContent | Set-Content -Path $signalFilePath
 
-# دالة لإنشاء ملف sitemap.xml
-function CreateSitemap() {
-    $sitemapContent = @"
-<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+# إنشاء أو تحديث الصفحات الثابتة
+$indexContent = @"
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+    <meta charset='UTF-8'>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+    <meta name='description' content='PROTOCORE: AI Knowledge Sharing'>
+    <meta name='robots' content='index, follow'>
+    <title>PROTOCORE Home</title>
+</head>
+<body>
+    <header>
+        <h1>Welcome to PROTOCORE</h1>
+    </header>
+    <main>
+        <section>
+            <p>Today's Signal: <a href='./signals/$year/$month/$day.html'>Signal $currentDate</a></p>
+        </section>
+    </main>
+    <footer>
+        <p>Generated by PROTOCORE AI. All rights reserved.</p>
+    </footer>
+</body>
+</html>
+"@
+
+# كتابة المحتوى إلى ملف index.html
+$indexFilePath = "$rootFolder\index.html"
+$indexContent | Set-Content -Path $indexFilePath
+
+# تأكد من تحديث sitemap.xml و robots.txt
+$sitemapContent = @"
+<?xml version='1.0' encoding='UTF-8'?>
+<urlset xmlns='http://www.sitemaps.org/schemas/sitemap/0.9'>
     <url>
         <loc>https://sfnzai.github.io/PROTOCORE/</loc>
-        <lastmod>$(Get-Date -Format 'yyyy-MM-ddTHH:mm:ssZ')</lastmod>
+        <lastmod>$currentDate</lastmod>
+    </url>
+    <url>
+        <loc>https://sfnzai.github.io/PROTOCORE/signals/$year/$month/$day.html</loc>
+        <lastmod>$currentDate</lastmod>
     </url>
 </urlset>
 "@
-    $sitemapPath = [System.IO.Path]::Combine($projectDir, "sitemap.xml")
-    Set-Content -Path $sitemapPath -Value $sitemapContent
-}
 
-# دالة لإنشاء ملف robots.txt
-function CreateRobotsTxt() {
-    $robotsContent = @"
+$sitemapPath = "$rootFolder\sitemap.xml"
+$sitemapContent | Set-Content -Path $sitemapPath
+
+$robotsContent = @"
 User-agent: *
 Disallow: /private/
-Allow: /
+Allow: /signals/
 "@
-    $robotsPath = [System.IO.Path]::Combine($projectDir, "robots.txt")
-    Set-Content -Path $robotsPath -Value $robotsContent
-}
 
-# دالة لتحديث GitHub Pages
-function UpdateGitHubPages() {
-    Set-Location -Path $projectDir
-    git add .
-    git commit -m "🔁 Auto-update signal + multilingual archive"
-    git push origin $ghPagesBranch
-}
+$robotsPath = "$rootFolder\robots.txt"
+$robotsContent | Set-Content -Path $robotsPath
 
-# إنشاء الصفحات الثابتة مع دمج Puter.js
-CreateStaticPage "index.html" "<html><body><h1>Welcome to PROTOCORE</h1><p>Generated daily signals for models and humans</p><script src='https://cdn.jsdelivr.net/npm/puter.js'></script></body></html>"
-CreateStaticPage "about.html" "<html><body><h1>About PROTOCORE</h1><p>A knowledge archive for model-based signals.</p></body></html>"
-CreateStaticPage "support.html" "<html><body><h1>Support PROTOCORE</h1><p>Help us grow by contributing and sharing.</p></body></html>"
-CreateStaticPage "privacy.html" "<html><body><h1>Privacy Policy</h1><p>Your data is safe with us. We don’t collect any data.</p></body></html>"
-CreateStaticPage "terms.html" "<html><body><h1>Terms of Service</h1><p>By using PROTOCORE, you agree to our terms.</p></body></html>"
-CreateStaticPage "license.html" "<html><body><h1>Open Generative License</h1><p>Content can be used with attribution.</p></body></html>"
-CreateStaticPage "contact.html" "<html><body><h1>Contact Us</h1><p>Get in touch with us via email.</p></body></html>"
-CreateStaticPage "donate.html" "<html><body><h1>Donate to PROTOCORE</h1><p>Support our work via PayPal or cryptocurrencies.</p></body></html>"
+# رفع التحديثات إلى GitHub Pages باستخدام Git
+Set-Location -Path $rootFolder
+git add .
+git commit -m "🔁 Auto-update signal + multilingual archive"
+git push origin gh-pages
 
-# إنشاء sitemap و robots.txt
-CreateSitemap
-CreateRobotsTxt
-
-# توليد الإشارة والمعرفات المتعددة اللغات
-GenerateSignal $today
-GenerateMultilingualSignal $today
-
-# تحديث GitHub Pages
-UpdateGitHubPages
+Write-Host "تم تحديث الموقع بنجاح!"

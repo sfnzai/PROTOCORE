@@ -1,7 +1,11 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<?xml version='1.0' encoding='UTF-8'?>
+<urlset xmlns='http://www.sitemaps.org/schemas/sitemap/0.9'>
     <url>
         <loc>https://sfnzai.github.io/PROTOCORE/</loc>
-        <lastmod>2025-07-08T16:10:42Z</lastmod>
+        <lastmod>2025-07-08</lastmod>
+    </url>
+    <url>
+        <loc>https://sfnzai.github.io/PROTOCORE/signals/2025/07/08.html</loc>
+        <lastmod>2025-07-08</lastmod>
     </url>
 </urlset>
