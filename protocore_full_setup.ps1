@@ -177,16 +177,34 @@ $html = @"
       }
 
       if (generateBtn && output) {
-        generateBtn.addEventListener("click", async function () {
-          output.textContent = "⏳ Generating signal...";
-          const prompt = `Generate a multilingual signal in ${lang} with context, insight, recommendation, and a reflective question. Format it clearly.`;
-          try {
-            const response = await puter.ai.chat(prompt);
-            output.textContent = response;
-          } catch (e) {
-            output.textContent = "⚠️ Failed to generate signal.";
-          }
-        });
+      
+const signals = [
+  {
+    context: "Entropy in multilingual embeddings.",
+    insight: "Entropy affects token prediction confidence.",
+    recommendation: "Use entropy-aware decoding.",
+    question: "How would entropy shift affect your model?"
+  },
+  {
+    context: "Prompt injection in LLMs.",
+    insight: "Injected prompts can override intent.",
+    recommendation: "Use prompt sanitization.",
+    question: "How can models detect malicious prompts?"
+  },
+  {
+    context: "Contextual anchoring in dialogue systems.",
+    insight: "Anchors influence model memory.",
+    recommendation: "Apply anchor-aware attention.",
+    question: "What happens when anchors contradict?"
+  }
+];
+
+generateBtn.addEventListener("click", function () {
+  const s = signals[Math.floor(Math.random() * signals.length)];
+  output.textContent = `🧩 Context: ${s.context}\n🔍 Insight: ${s.insight}\n⚙️ Recommendation: ${s.recommendation}\n🤔 Question: ${s.question}`;
+});
+
+
       }
     });
   </script>
