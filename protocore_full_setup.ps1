@@ -151,6 +151,27 @@ foreach ($lang in $languages) {
     <a href="$baseUrl/contact.html">📩 Contact</a>
   </div>
 
+  <script>
+  document.getElementById("copyBtn").addEventListener("click", function(e) {
+    e.preventDefault();
+    const text = document.body.innerText;
+    navigator.clipboard.writeText(text).then(() => {
+      alert("✅ Signal copied to clipboard!");
+    });
+  });
+
+  document.getElementById("shareBtn").addEventListener("click", function(e) {
+    e.preventDefault();
+    const url = window.location.href;
+    const text = "Check out this multilingual signal from PROTOCORE:";
+    const shareUrl = "https://twitter.com/intent/tweet?text=" + encodeURIComponent(text) + "&url=" + encodeURIComponent(url);
+    window.open(shareUrl, "_blank");
+  });
+</script>
+
+
+
+
   <div class='section'>
     <h2>🧠 Live Signal Generator</h2>
     <button onclick="regenerateSignal('$lang')">🔁 Generate New Signal</button>
