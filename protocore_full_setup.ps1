@@ -154,54 +154,88 @@ foreach ($lang in $languages) {
   Write-Host "✅ صفحة $lang تم توليدها: $filePath"
 }
 # === توليد index.html
-# === توليد index.html فقط إذا لم يكن موجودًا
-$indexPath = Join-Path $projectRoot "index.html"
-if (-not (Test-Path $indexPath)) {
-    $signalFiles = Get-ChildItem -Path "$projectRoot/signals" -Recurse -Filter "*.html" | Sort-Object LastWriteTime -Descending
-    $signalMap = @{}
-    foreach ($file in $signalFiles) {
-      $relPath = $file.FullName.Replace($projectRoot, "").Replace("\", "/").TrimStart("/")
-      $name = [System.IO.Path]::GetFileNameWithoutExtension($file.Name)
-      $lang = $name.Split(".")[-1]
-      $slug = $name.Substring(0, $name.Length - $lang.Length - 1)
-      if (-not $signalMap.ContainsKey($slug)) { $signalMap[$slug] = @{} }
-      $signalMap[$slug][$lang] = $relPath
-    }
+# === توليد index.html ديناميكيًا بتصميم محسّن
+$signalFiles = Get-ChildItem -Path "$projectRoot/signals" -Recurse -Filter "*.html" | Sort-Object LastWriteTime -Descending
+$signalMap = @{}
 
-    $indexHtml = @"
+foreach ($file in $signalFiles) {
+  $relPath = $file.FullName.Replace($projectRoot, "").Replace("\", "/").TrimStart("/")
+  $parts = $relPath -split "/"
+  $year = $parts[1]
+  $month = $parts[2]
+  $name = [System.IO.Path]::GetFileNameWithoutExtension($file.Name)
+  $lang = $name.Split(".")[-1]
+  $slug = $name.Substring(0, $name.Length - $lang.Length - 1)
+
+  if (-not $signalMap.ContainsKey($year)) { $signalMap[$year] = @{} }
+  if (-not $signalMap[$year].ContainsKey($month)) { $signalMap[$year][$month] = @{} }
+  if (-not $signalMap[$year][$month].ContainsKey($slug)) { $signalMap[$year][$month][$slug] = @{} }
+
+  $signalMap[$year][$month][$slug][$lang] = $relPath
+}
+
+# === بناء HTML
+$indexHtml = @"
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>PROTOCORE – Multilingual Signal Archive</title>
-  <meta name="description" content="A multilingual archive of generative signals for models and humans.">
+  <meta charset="UTF-8" />
+  <title>PROTOCORE – Signal Archive</title>
+  <meta name="description" content="Multilingual generative signals for models and humans.">
   <style>
-    body { font-family: system-ui, sans-serif; background: #111; color: #eee; padding: 2rem; }
-    h1 { color: #0ff; }
-    .signal { margin-bottom: 1.5rem; }
+    body { font-family: system-ui, sans-serif; background: #111; color: #eee; margin: 0; display: flex; }
+    nav { background: #000; padding: 1rem; width: 220px; min-height: 100vh; position: sticky; top: 0; }
+    nav a { display: block; color: #0ff; text-decoration: none; margin-bottom: 0.5rem; }
+    main { padding: 2rem; flex-grow: 1; }
+    h1, h2 { color: #0ff; }
+    .signal { margin-bottom: 1rem; }
     .langs a { margin-right: 0.5rem; color: #0ff; text-decoration: none; }
+    .section-title { margin-top: 2rem; border-bottom: 1px solid #333; padding-bottom: 0.5rem; }
   </style>
 </head>
 <body>
-  <h1>📡 PROTOCORE – Signal Archive</h1>
-  <p>Latest multilingual generative signals:</p>
+  <nav>
+    <h3>📂 Navigation</h3>
+    <a href="about.html">📘 About</a>
+    <a href="support.html">🛠 Support</a>
+    <a href="privacy.html">🔒 Privacy</a>
+    <a href="terms.html">📜 Terms</a>
+    <a href="license.html">⚖️ License</a>
+    <a href="contact.html">📩 Contact</a>
+    <a href="donate.html">💸 Donate</a>
+    <hr />
 "@
 
-    foreach ($slug in $signalMap.Keys) {
+# === روابط التنقل حسب السنة والشهر
+foreach ($year in $signalMap.Keys | Sort-Object -Descending) {
+  foreach ($month in $signalMap[$year].Keys | Sort-Object -Descending) {
+    $indexHtml += "<a href='#$year-$month'>🗓️ $year/$month</a>`n"
+  }
+}
+
+$indexHtml += "</nav><main><h1>📡 PROTOCORE – Signal Archive</h1><p>Explore multilingual generative signals organized by date and language.</p>"
+
+# === إدراج الإشارات
+foreach ($year in $signalMap.Keys | Sort-Object -Descending) {
+  foreach ($month in $signalMap[$year].Keys | Sort-Object -Descending) {
+    $indexHtml += "<h2 id='$year-$month' class='section-title'>🗓️ $year/$month</h2>`n"
+    foreach ($slug in $signalMap[$year][$month].Keys | Sort-Object) {
       $indexHtml += "<div class='signal'><strong>$slug</strong><div class='langs'>"
-      foreach ($lang in $signalMap[$slug].Keys) {
-        $path = $signalMap[$slug][$lang]
+      foreach ($lang in $signalMap[$year][$month][$slug].Keys | Sort-Object) {
+        $path = $signalMap[$year][$month][$slug][$lang]
         $indexHtml += "<a href='$path'>[$lang]</a>"
       }
       $indexHtml += "</div></div>`n"
     }
-
-    $indexHtml += "</body></html>"
-    $indexHtml | Out-File -Encoding UTF8 $indexPath
-    Write-Host "✅ index.html تم توليده لأول مرة فقط"
-} else {
-    Write-Host "⚠️ index.html موجود مسبقًا — لم يتم تغييره"
+  }
 }
+
+$indexHtml += "</main></body></html>"
+
+# === حفظ الملف
+$indexPath = Join-Path $projectRoot "index.html"
+$indexHtml | Out-File -Encoding UTF8 $indexPath
+Write-Host "✅ index.html تم توليده تلقائيًا وربط جميع الإشارات"
 
 # === توليد sitemap.xml
 $sitemap = @()
