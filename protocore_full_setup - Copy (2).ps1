@@ -102,21 +102,21 @@ $puterScript = @"
 "@
 
 # === توليد صفحات HTML لكل لغة
-
-# === توليد صفحات HTML لكل لغة (مُحدثة بالكامل)
-# === توليد صفحات HTML لكل لغة (مُحدثة بالكامل وآمنة)
 foreach ($lang in $languages) {
   $data = $translations[$lang]
   $filePath = Join-Path $signalDir "$signalId.$lang.html"
 
+  # === hreflang links
   $hreflangs = $languages | ForEach-Object {
     "<link rel='alternate' hreflang='$_' href='$signalId.$_.html' />"
   } -join "`n"
 
+  # === روابط اللغات داخل الصفحة
   $langSwitch = $languages | ForEach-Object {
     "<a href='$signalId.$_.html'>$_</a>"
   } -join " "
 
+  # === توليد HTML
   $html = @"
 <!DOCTYPE html>
 <html lang="$lang">
@@ -126,13 +126,7 @@ foreach ($lang in $languages) {
   <meta name="description" content="$($data.context)">
   <link rel="canonical" href="$baseUrl/signals/$year/$month/$signalId.$lang.html" />
   $hreflangs
-  <style>
-    body { font-family: system-ui, sans-serif; background: #111; color: #eee; padding: 2rem; line-height: 1.6; }
-    h1, h2 { color: #0ff; }
-    .section { margin-bottom: 2rem; }
-    .lang-switch a { margin-right: 1rem; color: #0ff; text-decoration: none; }
-    .buttons a { display: inline-block; margin: 0.5rem 1rem 0 0; padding: 0.5rem 1rem; background: #222; border: 1px solid #0ff; color: #0ff; text-decoration: none; border-radius: 4px; }
-  </style>
+  $style
 </head>
 <body>
   <h1>$($data.title)</h1>
@@ -144,46 +138,14 @@ foreach ($lang in $languages) {
   <div class="section"><h2>🤔 Question</h2><p>$($data.question)</p></div>
 
   <div class="buttons">
-    <a href="../../../../index.html">🔁 Generate New</a>
-    <a id="copyBtn" href="#">📋 Copy</a>
-    <a id="shareBtn" href="#">🔗 Share</a>
+    <a href="#">🔁 Generate New</a>
+    <a href="#">📋 Copy</a>
+    <a href="#">🔗 Share</a>
     <a href="$baseUrl/support.html">🗳 Support</a>
     <a href="$baseUrl/contact.html">📩 Contact</a>
   </div>
 
-  <div class='section'>
-    <h2>🧠 Live Signal Generator</h2>
-    <button onclick="regenerateSignal('$lang')">🔁 Generate New Signal</button>
-    <pre id="live-signal" style="margin-top:1rem; background:#222; padding:1rem; border:1px solid #0ff;">🧠 Click the button to generate a new signal...</pre>
-  </div>
-
-  <script src="https://js.puter.com/v2/"></script>
-  <script>
-    function regenerateSignal(lang) {
-      const prompt = `Generate a multilingual signal in ${lang} with context, insight, recommendation, and a reflective question. Format it clearly.`;
-      puter.ai.chat(prompt).then(response => {
-        document.getElementById("live-signal").innerText = response;
-      }).catch(() => {
-        document.getElementById("live-signal").innerText = "⚠️ Failed to generate signal.";
-      });
-    }
-
-    document.getElementById("copyBtn").addEventListener("click", function(e) {
-      e.preventDefault();
-      const text = document.body.innerText;
-      navigator.clipboard.writeText(text).then(() => {
-        alert("✅ Signal copied to clipboard!");
-      });
-    });
-
-    document.getElementById("shareBtn").addEventListener("click", function(e) {
-      e.preventDefault();
-      const url = window.location.href;
-      const text = "Check out this multilingual signal from PROTOCORE:";
-      const shareUrl = "https://twitter.com/intent/tweet?text=" + encodeURIComponent(text) + "&url=" + encodeURIComponent(url);
-      window.open(shareUrl, "_blank");
-    });
-  </script>
+  $puterScript
 </body>
 </html>
 "@
@@ -192,8 +154,7 @@ foreach ($lang in $languages) {
   Write-Host "✅ صفحة $lang تم توليدها: $filePath"
 }
 # === توليد index.html
-
-# === توليد index.html ديناميكيًا بتصميم محسّن وتفاعل ذكي
+# === توليد index.html ديناميكيًا بتصميم محسّن
 $signalFiles = Get-ChildItem -Path "$projectRoot/signals" -Recurse -Filter "*.html" | Sort-Object LastWriteTime -Descending
 $signalMap = @{}
 
@@ -227,21 +188,10 @@ $indexHtml = @"
     nav a { display: block; color: #0ff; text-decoration: none; margin-bottom: 0.5rem; }
     main { padding: 2rem; flex-grow: 1; }
     h1, h2 { color: #0ff; }
-    .signal { margin-bottom: 1.5rem; }
+    .signal { margin-bottom: 1rem; }
     .langs a { margin-right: 0.5rem; color: #0ff; text-decoration: none; }
     .section-title { margin-top: 2rem; border-bottom: 1px solid #333; padding-bottom: 0.5rem; }
-    .actions a { margin-right: 1rem; font-size: 0.9rem; color: #aaa; text-decoration: underline; }
   </style>
-  <script>
-    function copyToClipboard(text) {
-      navigator.clipboard.writeText(text).then(() => alert("✅ Copied to clipboard!"));
-    }
-    function shareSignal(url) {
-      const text = "Check out this multilingual signal from PROTOCORE:";
-      const shareUrl = "https://twitter.com/intent/tweet?text=" + encodeURIComponent(text) + "&url=" + encodeURIComponent(url);
-      window.open(shareUrl, "_blank");
-    }
-  </script>
 </head>
 <body>
   <nav>
@@ -256,6 +206,7 @@ $indexHtml = @"
     <hr />
 "@
 
+# === روابط التنقل حسب السنة والشهر
 foreach ($year in $signalMap.Keys | Sort-Object -Descending) {
   foreach ($month in $signalMap[$year].Keys | Sort-Object -Descending) {
     $indexHtml += "<a href='#$year-$month'>🗓️ $year/$month</a>`n"
@@ -264,20 +215,16 @@ foreach ($year in $signalMap.Keys | Sort-Object -Descending) {
 
 $indexHtml += "</nav><main><h1>📡 PROTOCORE – Signal Archive</h1><p>Explore multilingual generative signals organized by date and language.</p>"
 
+# === إدراج الإشارات
 foreach ($year in $signalMap.Keys | Sort-Object -Descending) {
   foreach ($month in $signalMap[$year].Keys | Sort-Object -Descending) {
     $indexHtml += "<h2 id='$year-$month' class='section-title'>🗓️ $year/$month</h2>`n"
     foreach ($slug in $signalMap[$year][$month].Keys | Sort-Object) {
       $indexHtml += "<div class='signal'><strong>$slug</strong><div class='langs'>"
-      $firstLang = $signalMap[$year][$month][$slug].Keys | Sort-Object | Select-Object -First 1
-      $firstPath = $signalMap[$year][$month][$slug][$firstLang]
       foreach ($lang in $signalMap[$year][$month][$slug].Keys | Sort-Object) {
         $path = $signalMap[$year][$month][$slug][$lang]
         $indexHtml += "<a href='$path'>[$lang]</a>"
       }
-      $indexHtml += "</div><div class='actions'>"
-      $indexHtml += "<a href='#' onclick=`"copyToClipboard('$baseUrl/$firstPath')`">📋 Copy</a>"
-    $indexHtml += "<a href='#' onclick=`"shareSignal('$baseUrl/$firstPath')`">🔗 Share</a>"
       $indexHtml += "</div></div>`n"
     }
   }
@@ -288,8 +235,20 @@ $indexHtml += "</main></body></html>"
 # === حفظ الملف
 $indexPath = Join-Path $projectRoot "index.html"
 $indexHtml | Out-File -Encoding UTF8 $indexPath
-Write-Host "✅ index.html تم توليده تلقائيًا وربط جميع الإشارات مع التفاعل"
+Write-Host "✅ index.html تم توليده تلقائيًا وربط جميع الإشارات"
 
+# === توليد sitemap.xml
+$sitemap = @()
+$sitemap += '<?xml version="1.0" encoding="UTF-8"?>'
+$sitemap += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'
+foreach ($file in $signalFiles) {
+  $relPath = $file.FullName.Replace($projectRoot, "").Replace("\", "/").TrimStart("/")
+  $url = "$baseUrl/$relPath"
+  $lastmod = (Get-Date $file.LastWriteTimeUtc -Format "yyyy-MM-dd")
+  $sitemap += "  <url><loc>$url</loc><lastmod>$lastmod</lastmod></url>"
+}
+$sitemap += '</urlset>'
+$sitemap -join "`n" | Out-File -Encoding UTF8 (Join-Path $projectRoot "sitemap.xml")
 
 # === توليد robots.txt
 @"
