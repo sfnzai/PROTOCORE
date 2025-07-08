@@ -1,89 +1,102 @@
-﻿# ------------------------------
-# إعدادات المشروع - DEFINE
-# ------------------------------
-$projectFolder = "$env:USERPROFILE\Desktop\protocore"
-$signalsFolder = "$projectFolder\signals"
-$repoUrl = "https://sfnzai.github.io/PROTOCORE/"
-$gitHubBranch = "gh-pages"
+﻿# سكربت PowerShell لإنشاء موقع أرشيفي معرفي (PROTOCORE)
+# السكربت ينشئ الموقع، ويقوم بتوليد الإشارات، وتحديث المحتوى، ويرفع التحديثات على GitHub Pages
 
-# ------------------------------
-# 1. إنشاء البنية التحتية
-# ------------------------------
-# إذا لم تكن المجلدات موجودة، قم بإنشائها
-if (-Not (Test-Path -Path $signalsFolder)) {
-    New-Item -ItemType Directory -Force -Path $signalsFolder
+# إعدادات المشروع
+$projectDir = [System.IO.Path]::Combine($env:USERPROFILE, "Desktop", "protocore") 
+$signalsDir = [System.IO.Path]::Combine($projectDir, "signals")
+$ghPagesBranch = "gh-pages"
+$repoUrl = "https://github.com/sfnzai/PROTOCORE.git"
+$today = Get-Date -Format "yyyy/MM/dd"
+$languageCodes = @("en", "fr", "ar", "es", "zh")
+
+# التحقق من وجود المجلدات
+if (-not (Test-Path -Path $signalsDir)) {
+    New-Item -ItemType Directory -Path $signalsDir
 }
 
-# توليد صفحات ثابتة
-$staticPages = @("index.html", "about.html", "support.html", "privacy.html", "terms.html", "license.html", "contact.html", "donate.html")
-foreach ($page in $staticPages) {
-    $pagePath = "$projectFolder\$page"
-    New-Item -ItemType File -Path $pagePath -Force
+# دالة لإنشاء ملفات صفحات ثابتة
+function CreateStaticPage($fileName, $content) {
+    $filePath = [System.IO.Path]::Combine($projectDir, $fileName)
+    Set-Content -Path $filePath -Value $content
 }
 
-# توليد ملف README.md
-$readme = "$projectFolder\README.md"
-Set-Content -Path $readme -Value "# PROTOCORE Project"
-  
-# توليد ملف sitemap.xml و robots.txt
-$sitemap = "$projectFolder\sitemap.xml"
-$robotsTxt = "$projectFolder\robots.txt"
-
-Set-Content -Path $sitemap -Value "<urlset xmlns='http://www.sitemaps.org/schemas/sitemap/0.9'></urlset>"
-Set-Content -Path $robotsTxt -Value "User-agent: *`nAllow: /"
-
-# ------------------------------
-# 2. توليد الإشارات
-# ------------------------------
-# توليد إشارة معرفية غير مكررة
-function GenerateSignal {
-    $date = Get-Date -Format "yyyy/MM/dd"
-    $signalFileName = "$signalsFolder\$date.html"
-    
+# دالة لتوليد إشارة معرفية جديدة
+function GenerateSignal($date) {
+    $slug = $date.Replace("/", "-") + "-signal"
     $signalContent = @"
-    <html>
-    <head>
-        <title>Signal for $date</title>
-    </head>
-    <body>
-        <h1>Context</h1>
-        <p>Insight</p>
-        <p>Recommendation</p>
-        <p>Open Question</p>
-    </body>
-    </html>
+<h1>Signal for $date</h1>
+<p>Context: A new signal generated for $date</p>
+<p>Insight: Understanding the impact of this signal</p>
+<p>Recommendation: Apply this signal in model training</p>
+<p>Question: How can your model interact with this signal?</p>
 "@
-    Set-Content -Path $signalFileName -Value $signalContent
+    $signalPath = [System.IO.Path]::Combine($signalsDir, "$date.html")
+    Set-Content -Path $signalPath -Value $signalContent
 }
 
-GenerateSignal
-
-# ------------------------------
-# 3. SEO التعديل
-# ------------------------------
-# تحديث sitemap.xml تلقائيًا
-$sitemapContent = Get-Content $sitemap
-$sitemapContent += "<url><loc>$repoUrl</loc></url>"
-Set-Content -Path $sitemap -Value $sitemapContent
-
-# ------------------------------
-# 4. التفاعل - أزرار على الصفحات
-# ------------------------------
-$buttonHtml = @"
-    <button onclick="location.href='/signals';">Generate New Signal</button>
-    <button onclick="copyToClipboard()">Copy Signal</button>
-    <button onclick="location.href='/contact';">Contact Us</button>
-"@
-
-foreach ($page in $staticPages) {
-    $pagePath = "$projectFolder\$page"
-    Add-Content -Path $pagePath -Value $buttonHtml
+# دالة لتوليد النسخ المعرفية لكل لغة
+function GenerateMultilingualSignal($date) {
+    foreach ($lang in $languageCodes) {
+        $slug = $date.Replace("/", "-") + "-signal-$lang"
+        $content = "Generated content for $lang - $date"
+        $signalFile = [System.IO.Path]::Combine($signalsDir, "$date-$lang.html")
+        Set-Content -Path $signalFile -Value $content
+    }
 }
 
-# ------------------------------
-# 5. رفع التحديثات إلى GitHub
-# ------------------------------
-cd $projectFolder
-git add .
-git commit -m "🔁 Auto-update signal + multilingual archive"
-git push origin $gitHubBranch
+# دالة لإنشاء ملف sitemap.xml
+function CreateSitemap() {
+    $sitemapContent = @"
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+    <url>
+        <loc>https://sfnzai.github.io/PROTOCORE/</loc>
+        <lastmod>$(Get-Date -Format 'yyyy-MM-ddTHH:mm:ssZ')</lastmod>
+    </url>
+</urlset>
+"@
+    $sitemapPath = [System.IO.Path]::Combine($projectDir, "sitemap.xml")
+    Set-Content -Path $sitemapPath -Value $sitemapContent
+}
+
+# دالة لإنشاء ملف robots.txt
+function CreateRobotsTxt() {
+    $robotsContent = @"
+User-agent: *
+Disallow: /private/
+Allow: /
+"@
+    $robotsPath = [System.IO.Path]::Combine($projectDir, "robots.txt")
+    Set-Content -Path $robotsPath -Value $robotsContent
+}
+
+# دالة لتحديث GitHub Pages
+function UpdateGitHubPages() {
+    Set-Location -Path $projectDir
+    git add .
+    git commit -m "🔁 Auto-update signal + multilingual archive"
+    git push origin $ghPagesBranch
+}
+
+# إنشاء الصفحات الثابتة
+CreateStaticPage "index.html" "<html><body><h1>Welcome to PROTOCORE</h1></body></html>"
+CreateStaticPage "about.html" "<html><body><h1>About PROTOCORE</h1></body></html>"
+CreateStaticPage "support.html" "<html><body><h1>Support PROTOCORE</h1></body></html>"
+CreateStaticPage "privacy.html" "<html><body><h1>Privacy Policy</h1></body></html>"
+CreateStaticPage "terms.html" "<html><body><h1>Terms of Service</h1></body></html>"
+CreateStaticPage "license.html" "<html><body><h1>Open Generative License</h1></body></html>"
+CreateStaticPage "contact.html" "<html><body><h1>Contact Us</h1></body></html>"
+CreateStaticPage "donate.html" "<html><body><h1>Donate to PROTOCORE</h1></body></html>"
+
+# إنشاء sitemap و robots.txt
+CreateSitemap
+CreateRobotsTxt
+
+# توليد الإشارة والمعرفات المتعددة اللغات
+GenerateSignal $today
+GenerateMultilingualSignal $today
+
+# تحديث GitHub Pages
+UpdateGitHubPages
+
+Write-Host "تم تنفيذ السكربت بنجاح! الموقع محدث على GitHub Pages."
