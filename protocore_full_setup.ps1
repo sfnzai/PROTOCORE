@@ -145,6 +145,66 @@ $html = @"
     <h2>🧠 Live Signal Generator</h2>
     <button id="generateSignalBtn">🔁 Generate New Signal</button>
     <pre id="live-signal">🧠 Click the button to generate a new signal...</pre>
+
+
+    <script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const copyBtn = document.getElementById("copyBtn");
+    const shareBtn = document.getElementById("shareBtn");
+    const generateBtn = document.getElementById("generateSignalBtn");
+    const output = document.getElementById("live-signal");
+
+    const signals = [
+      {
+        context: "Entropy in multilingual embeddings.",
+        insight: "Entropy affects cross-task prediction confidence.",
+        recommendation: "Use entropy-based models.",
+        question: "How would entropy shift affect your model?"
+      },
+      {
+        context: "Prompt injection in LLMs.",
+        insight: "Injected prompts can override intent.",
+        recommendation: "Use prompt sanitization.",
+        question: "How does prompt injection affect memory?"
+      },
+      {
+        context: "Contextual anchoring in dialogue systems.",
+        insight: "Anchors influence user attention.",
+        recommendation: "Apply anchor-aware interaction.",
+        question: "What happens when anchors contradict?"
+      }
+    ];
+
+    if (copyBtn) {
+      copyBtn.addEventListener("click", function (e) {
+        e.preventDefault();
+        const text = document.body.innerText;
+        navigator.clipboard.writeText(text).then(() => {
+          alert("✅ Signal copied to clipboard!");
+        });
+      });
+    }
+
+    if (shareBtn) {
+      shareBtn.addEventListener("click", function (e) {
+        e.preventDefault();
+        const url = window.location.href;
+        const text = "Check out this multilingual signal from PROTOCORE:";
+        const tweet = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`;
+        window.open(tweet, "_blank");
+      });
+    }
+
+    if (generateBtn && output) {
+      generateBtn.addEventListener("click", function () {
+        const s = signals[Math.floor(Math.random() * signals.length)];
+        output.textContent = `🧩 Context: ${s.context}\n🔍 Insight: ${s.insight}\n⚙️ Recommendation: ${s.recommendation}\n🤔 Question: ${s.question}`;
+      });
+    }
+  });
+</script>
+
+
   </div>
 
   <script src="https://js.puter.com/v2/"></script>
