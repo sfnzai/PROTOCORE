@@ -1,0 +1,45 @@
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Daily Signal: English</title>
+        <meta name="description" content="Context in English">
+        <link rel="canonical" href="https://sfnzai.github.io/PROTOCORE/signals/20250708201304.en.html" />
+        <style>
+            body { font-family: system-ui, sans-serif; background: #111; color: #eee; padding: 2rem; line-height: 1.6; }
+            h1, h2 { color: #0ff; }
+            .section { margin-bottom: 2rem; }
+            .lang-switch a { margin-right: 1rem; color: #0ff; text-decoration: none; }
+            .buttons a { display: inline-block; margin: 0.5rem 1rem 0 0; padding: 0.5rem 1rem; background: #222; border: 1px solid #0ff; color: #0ff; text-decoration: none; border-radius: 4px; }
+        </style>
+    </head>
+    <body>
+        <h1>Daily Signal: English</h1>
+        <div class="lang-switch">?? en</div>
+        <div class="section"><h2>?? Context</h2><p>Context in English</p></div>
+        <div class="section"><h2>?? Insight</h2><p>Insight in English</p></div>
+        <div class="section"><h2>?? Recommendation</h2><p>Recommendation in English</p></div>
+        <div class="section"><h2>?? Question</h2><p>Question in English</p></div>
+        <div class="buttons">
+            <a href="../../../../index.html">?? Generate New</a>
+            <a href="#" id="copyBtn">?? Copy</a>
+            <a href="#" id="shareBtn">?? Share</a>
+            <a href="https://sfnzai.github.io/PROTOCORE/support.html">?? Support</a>
+            <a href="https://sfnzai.github.io/PROTOCORE/contact.html">?? Contact</a>
+        </div>
+
+        <!-- Puter.js Script -->
+        <script src="https://js.puter.com/v2/"></script>
+        <script>
+            async function regenerateSignal(lang) {
+                const prompt = \Generate a multilingual signal in \en with context, insight, recommendation, and a reflective question. Format it clearly.\;
+                try {
+                    const response = await puter.ai.chat(prompt);
+                    document.getElementById("live-signal").innerText = response;
+                } catch (e) {
+                    document.getElementById("live-signal").innerText = "?? Failed to generate signal.";
+                }
+            }
+        </script>
+    </body>
+    </html>
