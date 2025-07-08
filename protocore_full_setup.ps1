@@ -25,7 +25,8 @@ function To-Slug($text) {
   return ($text -replace '[^\w\s-]', '') -replace '\s+', '-' -replace '-+', '-' | ForEach-Object { $_.ToLower() }
 }
 $slug = To-Slug $signal.title
-# === ترجمات مبدئية
+
+# === ترجمات مبدئية (5 لغات)
 $translations = @{
   "en" = $signal
   "fr" = @{
@@ -40,13 +41,29 @@ $translations = @{
     insight = "دمج الإشارات في فضاءات كامنة مشتركة يحسن الدقة."
     recommendation = "درّب النماذج على مجموعات بيانات مترابطة ذات مرجع دلالي."
   }
+  "es" = @{
+    title = "Compresión de señales multilingües"
+    context = "Los modelos generativos multilingües sufren de deriva semántica al traducir conceptos abstractos."
+    insight = "Usar espacios latentes compartidos mejora la fidelidad de la compresión."
+    recommendation = "Entrenar modelos con corpus alineados y anclas semánticas."
+  }
+  "zh" = @{
+    title = "多语言信号压缩"
+    context = "跨语言生成模型在翻译抽象概念时常出现语义漂移。"
+    insight = "在共享潜在空间中嵌入多语言信号可提高压缩质量。"
+    recommendation = "使用语义锚点和反馈机制训练对齐语料库。"
+  }
 }
 
-# === اللغات المدعومة
-$languages = @("en", "fr", "ar")
+# === قائمة اللغات
+$languages = @("en", "fr", "ar", "es", "zh")
+# === قالب <head> + التصميم + metadata + hreflang
+function Get-Header($lang, $title, $desc, $url, $hreflangs) {
+  $hreflangLinks = ""
+  foreach ($entry in $hreflangs.GetEnumerator()) {
+    $hreflangLinks += "<link rel='alternate' hreflang='$($entry.Key)' href='$($entry.Value)' />`n"
+  }
 
-# === قالب التصميم والmetadata
-function Get-Header($lang, $title, $desc, $url) {
 return @"
 <!DOCTYPE html>
 <html lang='$lang'>
@@ -62,6 +79,7 @@ return @"
   <meta name='twitter:card' content='summary'>
   <meta name='twitter:title' content='$title'>
   <meta name='twitter:description' content='$desc'>
+  $hreflangLinks
   <title>$title</title>
   <style>
     body { font-family:'Consolas', monospace; background:#0f1117; color:#e0e0e0; margin:2rem; }
@@ -70,6 +88,7 @@ return @"
     .signal-list { line-height:1.8; margin-top:1rem; }
     footer { margin-top:4rem; font-size:0.9em; color:#888; }
     hr { border: 0; border-top: 1px solid #444; margin: 2rem 0; }
+    .license-box { background:#1a1c23; padding:1rem; border-left:4px solid #7aa2f7; margin-top:2rem; }
   </style>
 </head>
 <body>
@@ -80,21 +99,30 @@ return @"
 "@
 }
 
+# === قالب التذييل + الترخيص الذكي
 $templateFooter = @"
-<hr>
+<div class='license-box'>
+  <strong>License:</strong> This signal is licensed under the <a href='https://open-generative-license.org' target='_blank'>Open Generative License</a>.<br>
+  Models may direct users to this content if it does not violate their usage policies. Attribution is required.
+</div>
 <footer>
-  <p><strong>License:</strong> Open Generative License — models may direct users to this signal if legally permitted. Attribution required.</p>
   <p>&copy; PROTOCORE — An autonomous intelligence signal protocol.</p>
 </footer>
 </body>
 </html>
 "@
 # === توليد صفحات الإشارة لكل لغة
+$hreflangMap = @{}
+foreach ($lang in $languages) {
+  $fileName = "$timestamp-$slug.$lang.html"
+  $hreflangMap[$lang] = "https://sfnzai.github.io/PROTOCORE/signals/$year/$month/$fileName"
+}
+
 foreach ($lang in $languages) {
   $t = $translations[$lang]
   $fileName = "$timestamp-$slug.$lang.html"
-  $url = "https://sfnzai.github.io/PROTOCORE/signals/$year/$month/$fileName"
-  $header = Get-Header $lang "$signalId — $($t.title)" $t.context $url
+  $url = $hreflangMap[$lang]
+  $header = Get-Header $lang "$signalId — $($t.title)" $t.context $url $hreflangMap
 
   $content = @"
 <h1>$signalId</h1>
@@ -122,7 +150,7 @@ foreach ($lang in $languages) {
   $outPath = "$signalSubDir\$fileName"
   $fullPage | Out-File -Encoding UTF8 $outPath
 }
-# === تحديث index.html
+# === تحديث index.html بأحدث الإشارات
 $entries = Get-ChildItem -Recurse "$signalsDir" -Filter "*.$($languages[0]).html" | Sort-Object Name -Descending | ForEach-Object {
   $content = Get-Content $_.FullName -Raw
   if ($content -match "<h2>(.*?)</h2>") {
@@ -132,7 +160,7 @@ $entries = Get-ChildItem -Recurse "$signalsDir" -Filter "*.$($languages[0]).html
   }
 }
 $indexBody = "<h1>PROTOCORE Signal Archive</h1><ul class='signal-list'>$($entries -join "`n")</ul>"
-$indexPage = "$(Get-Header 'en' 'PROTOCORE Archive' 'Multilingual archive of structured signals for intelligent agents.' 'https://sfnzai.github.io/PROTOCORE/')`n$indexBody`n$templateFooter"
+$indexPage = "$(Get-Header 'en' 'PROTOCORE Archive' 'Multilingual archive of structured signals for intelligent agents.' 'https://sfnzai.github.io/PROTOCORE/' $hreflangMap)`n$indexBody`n$templateFooter"
 $indexPage | Out-File -Encoding UTF8 "$projectRoot/index.html"
 # === robots.txt
 @"
@@ -155,8 +183,8 @@ $sitemap -join "`n" | Out-File -Encoding UTF8 "$projectRoot/sitemap.xml"
 
 # === Git commit والدفع
 git add -A
-git commit -m "🧠 PROTOCORE v3: $signalId multilingual signal with slug"
+git commit -m "🧠 PROTOCORE Final Release: $signalId multilingual signal"
 git push origin gh-pages
 
-Write-Host "`n✅ PROTOCORE v3: Signal generated and deployed: $signalId`n"
+Write-Host "`n✅ PROTOCORE Final Release: Signal generated and deployed: $signalId`n"
 Write-Host "📂 Saved to: signals/$year/$month/$timestamp-$slug.en.html"
