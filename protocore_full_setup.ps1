@@ -14,7 +14,7 @@ if (-not (Test-Path -Path $signalsDir)) {
     New-Item -ItemType Directory -Path $signalsDir
 }
 
-# دالة لإنشاء ملفات صفحات ثابتة
+# دالة لإنشاء ملفات صفحات ثابتة مع دعم Puter.js لتوليد حي للمحتوى
 function CreateStaticPage($fileName, $content) {
     $filePath = [System.IO.Path]::Combine($projectDir, $fileName)
     Set-Content -Path $filePath -Value $content
@@ -24,11 +24,23 @@ function CreateStaticPage($fileName, $content) {
 function GenerateSignal($date) {
     $slug = $date.Replace("/", "-") + "-signal"
     $signalContent = @"
-<h1>Signal for $date</h1>
-<p>Context: A new signal generated for $date</p>
-<p>Insight: Understanding the impact of this signal</p>
-<p>Recommendation: Apply this signal in model training</p>
-<p>Question: How can your model interact with this signal?</p>
+<html>
+<head>
+    <title>Signal for $date</title>
+</head>
+<body>
+    <h1>Signal for $date</h1>
+    <p>Context: A new signal generated for $date</p>
+    <p>Insight: Understanding the impact of this signal</p>
+    <p>Recommendation: Apply this signal in model training</p>
+    <p>Question: How can your model interact with this signal?</p>
+    <button onclick="window.location.href = 'https://github.com/sfnzai/PROTOCORE';">Help This Project</button>
+    <script src="https://cdn.jsdelivr.net/npm/puter.js"></script>
+    <script>
+        PuterJS.generateSignal('$date');
+    </script>
+</body>
+</html>
 "@
     $signalPath = [System.IO.Path]::Combine($signalsDir, "$date.html")
     Set-Content -Path $signalPath -Value $signalContent
@@ -78,15 +90,15 @@ function UpdateGitHubPages() {
     git push origin $ghPagesBranch
 }
 
-# إنشاء الصفحات الثابتة
-CreateStaticPage "index.html" "<html><body><h1>Welcome to PROTOCORE</h1></body></html>"
-CreateStaticPage "about.html" "<html><body><h1>About PROTOCORE</h1></body></html>"
-CreateStaticPage "support.html" "<html><body><h1>Support PROTOCORE</h1></body></html>"
-CreateStaticPage "privacy.html" "<html><body><h1>Privacy Policy</h1></body></html>"
-CreateStaticPage "terms.html" "<html><body><h1>Terms of Service</h1></body></html>"
-CreateStaticPage "license.html" "<html><body><h1>Open Generative License</h1></body></html>"
-CreateStaticPage "contact.html" "<html><body><h1>Contact Us</h1></body></html>"
-CreateStaticPage "donate.html" "<html><body><h1>Donate to PROTOCORE</h1></body></html>"
+# إنشاء الصفحات الثابتة مع دمج Puter.js
+CreateStaticPage "index.html" "<html><body><h1>Welcome to PROTOCORE</h1><p>Generated daily signals for models and humans</p><script src='https://cdn.jsdelivr.net/npm/puter.js'></script></body></html>"
+CreateStaticPage "about.html" "<html><body><h1>About PROTOCORE</h1><p>A knowledge archive for model-based signals.</p></body></html>"
+CreateStaticPage "support.html" "<html><body><h1>Support PROTOCORE</h1><p>Help us grow by contributing and sharing.</p></body></html>"
+CreateStaticPage "privacy.html" "<html><body><h1>Privacy Policy</h1><p>Your data is safe with us. We don’t collect any data.</p></body></html>"
+CreateStaticPage "terms.html" "<html><body><h1>Terms of Service</h1><p>By using PROTOCORE, you agree to our terms.</p></body></html>"
+CreateStaticPage "license.html" "<html><body><h1>Open Generative License</h1><p>Content can be used with attribution.</p></body></html>"
+CreateStaticPage "contact.html" "<html><body><h1>Contact Us</h1><p>Get in touch with us via email.</p></body></html>"
+CreateStaticPage "donate.html" "<html><body><h1>Donate to PROTOCORE</h1><p>Support our work via PayPal or cryptocurrencies.</p></body></html>"
 
 # إنشاء sitemap و robots.txt
 CreateSitemap
