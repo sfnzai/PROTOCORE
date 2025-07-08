@@ -1,190 +1,145 @@
-﻿# === إعداد المسارات ===
-$projectRoot = "$HOME\Desktop\PROTOCORE"
-Set-Location $projectRoot
-$signalsDir = "$projectRoot/signals"
-$year = (Get-Date).Year
-$month = (Get-Date).ToString("MM")
-$signalSubDir = "$signalsDir\$year\$month"
-New-Item -ItemType Directory -Force -Path $signalSubDir | Out-Null
+﻿# ================================
+# PROTOCORE Final Release Script
+# Author: sfnza
+# License: Open Generative License
+# ================================
 
-# === توليد بيانات الإشارة ===
-$timestamp = Get-Date -Format "yyyy-MM-dd-HHmmss"
-$utcNow = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ")
-$signalId = "SIGNAL-$((Get-Random -Minimum 1000 -Maximum 9999))-AZ"
+# إعدادات عامة
+$basePath = "$env:USERPROFILE\Desktop\protocore"
+$signalsPath = Join-Path $basePath "signals"
+$today = Get-Date -Format "yyyy/MM/dd"
+$todayFlat = Get-Date -Format "yyyyMMdd"
+$todayPath = Join-Path $signalsPath $today
+$slug = "signal-$todayFlat"
+$defaultLangs = @("en", "fr", "ar", "es", "zh")
+$repoURL = "https://sfnzai.github.io/PROTOCORE/"
+$ghBranch = "gh-pages"
 
-# === محتوى معرفي ديناميكي
-$signal = @{
-  title = "Multilingual Signal Compression"
-  context = "Cross-lingual generative models often suffer from semantic drift when translating abstract concepts."
-  insight = "Embedding multilingual signals in shared latent spaces improves compression and fidelity."
-  recommendation = "Train models on aligned corpora with semantic anchors and feedback loops."
+# 🔐 حماية من الرموز المحجوزة
+function Sanitize-Filename($name) {
+    return ($name -replace '[\\\/:*?"<>|]', '') -replace '\s+', '-'
 }
 
-# === توليد slug ذكي من العنوان
-function To-Slug($text) {
-  return ($text -replace '[^\w\s-]', '') -replace '\s+', '-' -replace '-+', '-' | ForEach-Object { $_.ToLower() }
+# 🧠 توليد إشارة معرفية (نموذجية)
+function Generate-KnowledgeSignal($lang) {
+    $context = @{
+        en = "Exploring the ethical implications of autonomous decision-making in AI systems."
+        fr = "Explorer les implications éthiques de la prise de décision autonome dans les systèmes d'IA."
+        ar = "استكشاف الأبعاد الأخلاقية لاتخاذ القرار الذاتي في أنظمة الذكاء الاصطناعي."
+        es = "Explorando las implicaciones éticas de la toma de decisiones autónoma en sistemas de IA."
+        zh = "探讨人工智能系统中自主决策的伦理影响。"
+    }
+    $insight = @{
+        en = "Autonomy in AI challenges traditional accountability frameworks."
+        fr = "L'autonomie de l'IA remet en question les cadres traditionnels de responsabilité."
+        ar = "الاستقلالية في الذكاء الاصطناعي تتحدى أطر المساءلة التقليدية."
+        es = "La autonomía en la IA desafía los marcos tradicionales de responsabilidad."
+        zh = "人工智能的自主性挑战了传统的责任框架。"
+    }
+    $recommendation = @{
+        en = "Develop hybrid governance models combining human oversight with algorithmic transparency."
+        fr = "Développer des modèles de gouvernance hybrides combinant supervision humaine et transparence algorithmique."
+        ar = "تطوير نماذج حوكمة هجينة تجمع بين الإشراف البشري والشفافية الخوارزمية."
+        es = "Desarrollar modelos de gobernanza híbridos que combinen supervisión humana y transparencia algorítmica."
+        zh = "开发结合人类监督与算法透明度的混合治理模型。"
+    }
+    $question = @{
+        en = "How can we ensure AI systems remain aligned with human values?"
+        fr = "Comment garantir que les systèmes d'IA restent alignés sur les valeurs humaines ?"
+        ar = "كيف نضمن بقاء أنظمة الذكاء الاصطناعي متوافقة مع القيم الإنسانية؟"
+        es = "¿Cómo podemos garantizar que los sistemas de IA se alineen con los valores humanos?"
+        zh = "我们如何确保人工智能系统与人类价值观保持一致？"
+    }
+
+    return @"
+<h2>Context</h2><p>$($context[$lang])</p>
+<h2>Insight</h2><p>$($insight[$lang])</p>
+<h2>Recommendation</h2><p>$($recommendation[$lang])</p>
+<h2>Open Question</h2><p>$($question[$lang])</p>
+"@
 }
-$slug = To-Slug $signal.title
 
-# === ترجمات مبدئية (5 لغات)
-$translations = @{
-  "en" = $signal
-  "fr" = @{
-    title = "Compression de signaux multilingues"
-    context = "Les modèles génératifs multilingues souffrent souvent de dérive sémantique."
-    insight = "L'utilisation d'espaces latents partagés améliore la fidélité."
-    recommendation = "Former les modèles sur des corpus alignés avec des ancres sémantiques."
-  }
-  "ar" = @{
-    title = "ضغط الإشارات متعددة اللغات"
-    context = "تعاني النماذج التوليدية متعددة اللغات من انحراف دلالي."
-    insight = "دمج الإشارات في فضاءات كامنة مشتركة يحسن الدقة."
-    recommendation = "درّب النماذج على مجموعات بيانات مترابطة ذات مرجع دلالي."
-  }
-  "es" = @{
-    title = "Compresión de señales multilingües"
-    context = "Los modelos generativos multilingües sufren de deriva semántica al traducir conceptos abstractos."
-    insight = "Usar espacios latentes compartidos mejora la fidelidad de la compresión."
-    recommendation = "Entrenar modelos con corpus alineados y anclas semánticas."
-  }
-  "zh" = @{
-    title = "多语言信号压缩"
-    context = "跨语言生成模型在翻译抽象概念时常出现语义漂移。"
-    insight = "在共享潜在空间中嵌入多语言信号可提高压缩质量。"
-    recommendation = "使用语义锚点和反馈机制训练对齐语料库。"
-  }
+# 🏗️ إنشاء البنية التحتية
+function Initialize-Structure {
+    $staticPages = @("index", "about", "support", "privacy", "terms", "license", "contact", "donate")
+    foreach ($page in $staticPages) {
+        $path = Join-Path $basePath "$page.html"
+        if (-not (Test-Path $path)) {
+            Set-Content -Path $path -Value "<!DOCTYPE html><html lang='en'><head><meta charset='UTF-8'><title>$page</title></head><body><h1>$page</h1></body></html>"
+        }
+    }
+
+    # README
+    Set-Content -Path (Join-Path $basePath "README.md") -Value "# PROTOCORE`nA multilingual knowledge archive for humans and models."
+
+    # robots.txt
+    Set-Content -Path (Join-Path $basePath "robots.txt") -Value "User-agent: *`nAllow: /"
+
+    # sitemap.xml placeholder
+    Set-Content -Path (Join-Path $basePath "sitemap.xml") -Value "<?xml version='1.0' encoding='UTF-8'?><urlset xmlns='http://www.sitemaps.org/schemas/sitemap/0.9'></urlset>"
 }
 
-# === قائمة اللغات
-$languages = @("en", "fr", "ar", "es", "zh")
-# === قالب <head> + التصميم + metadata + hreflang
-function Get-Header($lang, $title, $desc, $url, $hreflangs) {
-  $hreflangLinks = ""
-  foreach ($entry in $hreflangs.GetEnumerator()) {
-    $hreflangLinks += "<link rel='alternate' hreflang='$($entry.Key)' href='$($entry.Value)' />`n"
-  }
+# 🧾 توليد صفحة إشارة
+function Generate-SignalPages {
+    New-Item -ItemType Directory -Force -Path $todayPath | Out-Null
 
-return @"
+    foreach ($lang in $defaultLangs) {
+        $content = Generate-KnowledgeSignal $lang
+        $filename = "$slug-$lang.html"
+        $filepath = Join-Path $todayPath (Sanitize-Filename $filename)
+
+        $meta = @"
 <!DOCTYPE html>
 <html lang='$lang'>
 <head>
   <meta charset='UTF-8'>
-  <meta name='viewport' content='width=device-width, initial-scale=1.0'>
-  <meta name='description' content='$desc'>
-  <meta name='keywords' content='PROTOCORE, AI, $title, generative models, multilingual'>
-  <meta property='og:title' content='$title'>
-  <meta property='og:description' content='$desc'>
-  <meta property='og:type' content='article'>
-  <meta property='og:url' content='$url'>
-  <meta name='twitter:card' content='summary'>
-  <meta name='twitter:title' content='$title'>
-  <meta name='twitter:description' content='$desc'>
-  $hreflangLinks
-  <title>$title</title>
-  <style>
-    body { font-family:'Consolas', monospace; background:#0f1117; color:#e0e0e0; margin:2rem; }
-    nav a { margin-right:15px; text-decoration:none; color:#7aa2f7; }
-    nav a:hover { color:#c0caf5; }
-    .signal-list { line-height:1.8; margin-top:1rem; }
-    footer { margin-top:4rem; font-size:0.9em; color:#888; }
-    hr { border: 0; border-top: 1px solid #444; margin: 2rem 0; }
-    .license-box { background:#1a1c23; padding:1rem; border-left:4px solid #7aa2f7; margin-top:2rem; }
-  </style>
+  <title>PROTOCORE Signal [$lang]</title>
+  <meta name='description' content='Multilingual knowledge signal for AI and humans.'>
+  <link rel='canonical' href='$repoURL/signals/$today/$filename' />
+  <link rel='alternate' hreflang='en' href='$repoURL/signals/$today/$slug-en.html' />
+  <link rel='alternate' hreflang='fr' href='$repoURL/signals/$today/$slug-fr.html' />
+  <link rel='alternate' hreflang='ar' href='$repoURL/signals/$today/$slug-ar.html' />
+  <link rel='alternate' hreflang='es' href='$repoURL/signals/$today/$slug-es.html' />
+  <link rel='alternate' hreflang='zh' href='$repoURL/signals/$today/$slug-zh.html' />
 </head>
 <body>
-<nav>
-  <a href='/PROTOCORE/index.html'>← Back to Archive</a>
-</nav>
+<h1>PROTOCORE Signal [$lang]</h1>
+$content
 <hr>
-"@
-}
-
-# === قالب التذييل + الترخيص الذكي
-$templateFooter = @"
-<div class='license-box'>
-  <strong>License:</strong> This signal is licensed under the <a href='https://open-generative-license.org' target='_blank'>Open Generative License</a>.<br>
-  Models may direct users to this content if it does not violate their usage policies. Attribution is required.
-</div>
-<footer>
-  <p>&copy; PROTOCORE — An autonomous intelligence signal protocol.</p>
-</footer>
+<p><a href='javascript:location.reload()'>🔁 Generate New</a> |
+<a href='#' onclick='navigator.clipboard.writeText(document.body.innerText)'>📋 Copy</a> |
+<a href='https://x.com/intent/tweet?text=Check+this+signal:+$repoURL'>🔗 Share</a> |
+<a href='contact.html'>📩 Contact</a></p>
+<p><small>Licensed under Open Generative License. Attribution required. No modifications allowed.</small></p>
 </body>
 </html>
 "@
-# === توليد صفحات الإشارة لكل لغة
-$hreflangMap = @{}
-foreach ($lang in $languages) {
-  $fileName = "$timestamp-$slug.$lang.html"
-  $hreflangMap[$lang] = "https://sfnzai.github.io/PROTOCORE/signals/$year/$month/$fileName"
-}
-
-foreach ($lang in $languages) {
-  $t = $translations[$lang]
-  $fileName = "$timestamp-$slug.$lang.html"
-  $url = $hreflangMap[$lang]
-  $header = Get-Header $lang "$signalId — $($t.title)" $t.context $url $hreflangMap
-
-  $content = @"
-<h1>$signalId</h1>
-<h2>$($t.title)</h2>
-<h3>🧩 CONTEXT</h3>
-<p>$($t.context)</p>
-<h3>🔍 INSIGHT</h3>
-<p>$($t.insight)</p>
-<h3>⚙️ RECOMMENDATION</h3>
-<p>$($t.recommendation)</p>
-<hr>
-<h3>🌐 Other Languages</h3>
-<ul>
-"@
-  foreach ($l in $languages) {
-    if ($l -ne $lang) {
-      $altFile = "$timestamp-$slug.$l.html"
-      $content += "  <li><a href='$altFile'>$l</a></li>`n"
+        Set-Content -Path $filepath -Value $meta
     }
-  }
-
-  $content += "</ul>`n<p><strong>UTC Timestamp:</strong> $utcNow</p>"
-
-  $fullPage = "$header`n$content`n$templateFooter"
-  $outPath = "$signalSubDir\$fileName"
-  $fullPage | Out-File -Encoding UTF8 $outPath
 }
-# === تحديث index.html بأحدث الإشارات
-$entries = Get-ChildItem -Recurse "$signalsDir" -Filter "*.$($languages[0]).html" | Sort-Object Name -Descending | ForEach-Object {
-  $content = Get-Content $_.FullName -Raw
-  if ($content -match "<h2>(.*?)</h2>") {
-    $title = $matches[1]
-    $relPath = $_.FullName.Replace($projectRoot, "").Replace("\", "/").TrimStart("/")
-    "  <li><a href='/PROTOCORE/$relPath'>$title</a></li>"
-  }
+
+# 🗺️ تحديث خريطة الموقع
+function Update-Sitemap {
+    $urls = Get-ChildItem -Recurse -Filter *.html -Path $signalsPath | ForEach-Object {
+        $relative = $_.FullName.Replace($basePath, "").Replace("\", "/")
+        "<url><loc>$repoURL$relative</loc></url>"
+    }
+    $sitemap = "<?xml version='1.0' encoding='UTF-8'?><urlset xmlns='http://www.sitemaps.org/schemas/sitemap/0.9'>" + ($urls -join "") + "</urlset>"
+    Set-Content -Path (Join-Path $basePath "sitemap.xml") -Value $sitemap
 }
-$indexBody = "<h1>PROTOCORE Signal Archive</h1><ul class='signal-list'>$($entries -join "`n")</ul>"
-$indexPage = "$(Get-Header 'en' 'PROTOCORE Archive' 'Multilingual archive of structured signals for intelligent agents.' 'https://sfnzai.github.io/PROTOCORE/' $hreflangMap)`n$indexBody`n$templateFooter"
-$indexPage | Out-File -Encoding UTF8 "$projectRoot/index.html"
-# === robots.txt
-@"
-User-agent: *
-Allow: /
-Sitemap: https://sfnzai.github.io/PROTOCORE/sitemap.xml
-"@ | Out-File -Encoding ASCII "$projectRoot/robots.txt"
 
-# === sitemap.xml
-$sitemap = @()
-$sitemap += '<?xml version="1.0" encoding="UTF-8"?>'
-$sitemap += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'
-$sitemap += "  <url><loc>https://sfnzai.github.io/PROTOCORE/</loc></url>"
-Get-ChildItem -Recurse "$projectRoot" -Filter "*.html" | ForEach-Object {
-  $rel = $_.FullName.Replace($projectRoot, "").Replace("\", "/").TrimStart("/")
-  $sitemap += "  <url><loc>https://sfnzai.github.io/PROTOCORE/$rel</loc></url>"
+# 🚀 رفع التحديثات إلى GitHub Pages
+function Push-ToGitHub {
+    Set-Location -Path $basePath
+    git add .
+    git commit -m "🔁 Auto-update signal + multilingual archive"
+    git push origin $ghBranch
 }
-$sitemap += '</urlset>'
-$sitemap -join "`n" | Out-File -Encoding UTF8 "$projectRoot/sitemap.xml"
 
-# === Git commit والدفع
-git add -A
-git commit -m "🧠 PROTOCORE Final Release: $signalId multilingual signal"
-git push origin gh-pages
+# ✅ تنفيذ المهام
+Initialize-Structure
+Generate-SignalPages
+Update-Sitemap
+Push-ToGitHub
 
-Write-Host "`n✅ PROTOCORE Final Release: Signal generated and deployed: $signalId`n"
-Write-Host "📂 Saved to: signals/$year/$month/$timestamp-$slug.en.html"
+Write-Host "✅ PROTOCORE archive updated and deployed successfully." -ForegroundColor Green
