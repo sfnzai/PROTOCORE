@@ -1,29 +1,89 @@
-﻿# === الانتقال إلى مجلد المشروع
-Set-Location $projectRoot
+﻿# ------------------------------
+# إعدادات المشروع - DEFINE
+# ------------------------------
+$projectFolder = "$env:USERPROFILE\Desktop\protocore"
+$signalsFolder = "$projectFolder\signals"
+$repoUrl = "https://sfnzai.github.io/PROTOCORE/"
+$gitHubBranch = "gh-pages"
 
-# === التأكد من وجود git
-if (-not (Get-Command git -ErrorAction SilentlyContinue)) {
-  Write-Error "❌ Git غير مثبت أو غير مفعل في النظام."
-  exit
+# ------------------------------
+# 1. إنشاء البنية التحتية
+# ------------------------------
+# إذا لم تكن المجلدات موجودة، قم بإنشائها
+if (-Not (Test-Path -Path $signalsFolder)) {
+    New-Item -ItemType Directory -Force -Path $signalsFolder
 }
 
-# === التأكد من تهيئة المستودع
-if (-not (Test-Path ".git")) {
-  git init
-  git branch -M gh-pages
-  git remote add origin https://github.com/sfnzai/PROTOCORE.git
+# توليد صفحات ثابتة
+$staticPages = @("index.html", "about.html", "support.html", "privacy.html", "terms.html", "license.html", "contact.html", "donate.html")
+foreach ($page in $staticPages) {
+    $pagePath = "$projectFolder\$page"
+    New-Item -ItemType File -Path $pagePath -Force
 }
 
-# === إضافة جميع الملفات
+# توليد ملف README.md
+$readme = "$projectFolder\README.md"
+Set-Content -Path $readme -Value "# PROTOCORE Project"
+  
+# توليد ملف sitemap.xml و robots.txt
+$sitemap = "$projectFolder\sitemap.xml"
+$robotsTxt = "$projectFolder\robots.txt"
+
+Set-Content -Path $sitemap -Value "<urlset xmlns='http://www.sitemaps.org/schemas/sitemap/0.9'></urlset>"
+Set-Content -Path $robotsTxt -Value "User-agent: *`nAllow: /"
+
+# ------------------------------
+# 2. توليد الإشارات
+# ------------------------------
+# توليد إشارة معرفية غير مكررة
+function GenerateSignal {
+    $date = Get-Date -Format "yyyy/MM/dd"
+    $signalFileName = "$signalsFolder\$date.html"
+    
+    $signalContent = @"
+    <html>
+    <head>
+        <title>Signal for $date</title>
+    </head>
+    <body>
+        <h1>Context</h1>
+        <p>Insight</p>
+        <p>Recommendation</p>
+        <p>Open Question</p>
+    </body>
+    </html>
+"@
+    Set-Content -Path $signalFileName -Value $signalContent
+}
+
+GenerateSignal
+
+# ------------------------------
+# 3. SEO التعديل
+# ------------------------------
+# تحديث sitemap.xml تلقائيًا
+$sitemapContent = Get-Content $sitemap
+$sitemapContent += "<url><loc>$repoUrl</loc></url>"
+Set-Content -Path $sitemap -Value $sitemapContent
+
+# ------------------------------
+# 4. التفاعل - أزرار على الصفحات
+# ------------------------------
+$buttonHtml = @"
+    <button onclick="location.href='/signals';">Generate New Signal</button>
+    <button onclick="copyToClipboard()">Copy Signal</button>
+    <button onclick="location.href='/contact';">Contact Us</button>
+"@
+
+foreach ($page in $staticPages) {
+    $pagePath = "$projectFolder\$page"
+    Add-Content -Path $pagePath -Value $buttonHtml
+}
+
+# ------------------------------
+# 5. رفع التحديثات إلى GitHub
+# ------------------------------
+cd $projectFolder
 git add .
-
-# === إنشاء رسالة commit ديناميكية
-$commitMessage = "🔁 Auto-update signal + multilingual archive - $(Get-Date -Format 'yyyy-MM-dd HH:mm')"
-
-# === تنفيذ commit
-git commit -m "$commitMessage"
-
-# === دفع التحديثات إلى GitHub
-git push origin gh-pages
-
-Write-Host "✅ تم رفع التحديثات إلى GitHub Pages بنجاح"
+git commit -m "🔁 Auto-update signal + multilingual archive"
+git push origin $gitHubBranch
