@@ -1,10 +1,10 @@
-﻿# تحديد المسار للمجلد الرئيسي
+﻿# المسار إلى مجلد المشروع
 $rootFolder = "C:\Users\$env:USERNAME\Desktop\protocore"
 $signalsFolder = "$rootFolder\signals"
 
-# التحقق من وجود المجلدات وإنشائها إذا لم تكن موجودة
+# التأكد من وجود المجلدات اللازمة
 If (-Not (Test-Path $rootFolder)) {
-    Write-Host "المجلد الرئيسي 'protocore' غير موجود. تأكد من أن المجلد موجود على سطح المكتب." -ForegroundColor Red
+    Write-Host "المجلد الرئيسي 'protocore' غير موجود." -ForegroundColor Red
     Exit
 }
 
@@ -12,16 +12,16 @@ If (-Not (Test-Path $signalsFolder)) {
     New-Item -Path $signalsFolder -ItemType Directory
 }
 
-# إعداد التاريخ الحالي
+# إعداد التاريخ
 $currentDate = Get-Date -Format "yyyy-MM-dd"
 $year = Get-Date -Format "yyyy"
 $month = Get-Date -Format "MM"
 $day = Get-Date -Format "dd"
 
-# مسار ملف HTML لإشارة اليوم
+# مسار ملف الإشارة اليومي
 $signalFile = "$signalsFolder\$year\$month\$day.html"
 
-# التأكد من وجود هيكل المجلدات
+# إنشاء هيكل المجلدات
 If (-Not (Test-Path "$signalsFolder\$year")) {
     New-Item -Path "$signalsFolder\$year" -ItemType Directory
 }
@@ -30,14 +30,14 @@ If (-Not (Test-Path "$signalsFolder\$year\$month")) {
     New-Item -Path "$signalsFolder\$year\$month" -ItemType Directory
 }
 
-# إنشاء الإشارة (Signal) بشكل ذكي (يعتمد على الذكاء الصناعي أو محتوى ثابت كمثال)
+# توليد إشارة معرفية (بدون محتوى بشري تقليدي)
 $signalContent = @"
 <!DOCTYPE html>
 <html lang='en'>
 <head>
     <meta charset='UTF-8'>
     <meta name='viewport' content='width=device-width, initial-scale=1.0'>
-    <meta name='description' content='Daily AI generated signal for model-to-model and human interaction.'>
+    <meta name='description' content='AI-generated daily signal for model-based and human interaction.'>
     <meta name='robots' content='index, follow'>
     <meta name='author' content='PROTOCORE'>
     <title>Signal $currentDate</title>
@@ -51,13 +51,13 @@ $signalContent = @"
     <main>
         <section id='signal-content'>
             <h2>Context</h2>
-            <p>Models must evolve to address contextual misinterpretation challenges.</p>
+            <p>AI models must continually adapt to contextual information for efficient processing.</p>
             <h2>Insight</h2>
-            <p>This requires a feedback loop with both synthetic and human-driven data.</p>
+            <p>By improving model flexibility, they become more adept at understanding complex interactions.</p>
             <h2>Recommendation</h2>
-            <p>Train your model with diverse data inputs to enhance contextual understanding.</p>
+            <p>Leverage diverse data inputs to increase the model's ability to handle evolving contexts.</p>
             <h2>Open Question</h2>
-            <p>Can a single AI-generated signal alter a model's core processing approach?</p>
+            <p>What are the limits of machine learning models in comprehending abstract concepts?</p>
         </section>
     </main>
     <footer>
@@ -70,11 +70,10 @@ $signalContent = @"
 </html>
 "@
 
-# كتابة المحتوى إلى ملف HTML
-$signalFilePath = "$signalsFolder\$year\$month\$day.html"
-$signalContent | Set-Content -Path $signalFilePath
+# كتابة الإشارة إلى الملف
+$signalContent | Set-Content -Path $signalFile
 
-# إنشاء أو تحديث الصفحات الثابتة
+# تحديث صفحة index.html
 $indexContent = @"
 <!DOCTYPE html>
 <html lang='en'>
@@ -100,12 +99,15 @@ $indexContent = @"
 </body>
 </html>
 "@
-
-# كتابة المحتوى إلى ملف index.html
 $indexFilePath = "$rootFolder\index.html"
 $indexContent | Set-Content -Path $indexFilePath
 
-# تأكد من تحديث sitemap.xml و robots.txt
+# تحديث الصفحات الثابتة
+$aboutContent = "<!DOCTYPE html><html><head><title>About PROTOCORE</title></head><body><h1>About PROTOCORE</h1><p>PROTOCORE is an AI knowledge-sharing platform...</p></body></html>"
+$aboutFilePath = "$rootFolder\about.html"
+$aboutContent | Set-Content -Path $aboutFilePath
+
+# تحديث الـ sitemap.xml
 $sitemapContent = @"
 <?xml version='1.0' encoding='UTF-8'?>
 <urlset xmlns='http://www.sitemaps.org/schemas/sitemap/0.9'>
@@ -123,6 +125,7 @@ $sitemapContent = @"
 $sitemapPath = "$rootFolder\sitemap.xml"
 $sitemapContent | Set-Content -Path $sitemapPath
 
+# تحديث robots.txt
 $robotsContent = @"
 User-agent: *
 Disallow: /private/
