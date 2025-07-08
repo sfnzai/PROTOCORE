@@ -151,24 +151,32 @@ foreach ($lang in $languages) {
     <a href="$baseUrl/contact.html">📩 Contact</a>
   </div>
 
-  <script>
-  document.getElementById("copyBtn").addEventListener("click", function(e) {
-    e.preventDefault();
-    const text = document.body.innerText;
-    navigator.clipboard.writeText(text).then(() => {
-      alert("✅ Signal copied to clipboard!");
-    });
-  });
+ <script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const copyBtn = document.getElementById("copyBtn");
+    const shareBtn = document.getElementById("shareBtn");
 
-  document.getElementById("shareBtn").addEventListener("click", function(e) {
-    e.preventDefault();
-    const url = window.location.href;
-    const text = "Check out this multilingual signal from PROTOCORE:";
-    const shareUrl = "https://twitter.com/intent/tweet?text=" + encodeURIComponent(text) + "&url=" + encodeURIComponent(url);
-    window.open(shareUrl, "_blank");
+    if (copyBtn) {
+      copyBtn.addEventListener("click", function (e) {
+        e.preventDefault();
+        const text = document.body.innerText;
+        navigator.clipboard.writeText(text).then(() => {
+          alert("✅ Signal copied to clipboard!");
+        });
+      });
+    }
+
+    if (shareBtn) {
+      shareBtn.addEventListener("click", function (e) {
+        e.preventDefault();
+        const url = window.location.href;
+        const text = "Check out this multilingual signal from PROTOCORE:";
+        const shareUrl = "https://twitter.com/intent/tweet?text=" + encodeURIComponent(text) + "&url=" + encodeURIComponent(url);
+        window.open(shareUrl, "_blank");
+      });
+    }
   });
 </script>
-
 
 
 
