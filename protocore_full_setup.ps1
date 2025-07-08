@@ -105,19 +105,8 @@ $puterScript = @"
 
 # === توليد صفحات HTML لكل لغة (مُحدثة بالكامل)
 # === توليد صفحات HTML لكل لغة (مُحدثة بالكامل وآمنة)
-foreach ($lang in $languages) {
-  $data = $translations[$lang]
-  $filePath = Join-Path $signalDir "$signalId.$lang.html"
 
-  $hreflangs = $languages | ForEach-Object {
-    "<link rel='alternate' hreflang='$_' href='$signalId.$_.html' />"
-  } -join "`n"
-
-  $langSwitch = $languages | ForEach-Object {
-    "<a href='$signalId.$_.html'>$_</a>"
-  } -join " "
-
-  $html = @"
+$html = @"
 <!DOCTYPE html>
 <html lang="$lang">
 <head>
@@ -132,6 +121,7 @@ foreach ($lang in $languages) {
     .section { margin-bottom: 2rem; }
     .lang-switch a { margin-right: 1rem; color: #0ff; text-decoration: none; }
     .buttons a { display: inline-block; margin: 0.5rem 1rem 0 0; padding: 0.5rem 1rem; background: #222; border: 1px solid #0ff; color: #0ff; text-decoration: none; border-radius: 4px; }
+    pre { background: #222; padding: 1rem; border: 1px solid #0ff; white-space: pre-wrap; }
   </style>
 </head>
 <body>
@@ -151,75 +141,59 @@ foreach ($lang in $languages) {
     <a href="$baseUrl/contact.html">📩 Contact</a>
   </div>
 
- <script>
-  document.addEventListener("DOMContentLoaded", function () {
-    const copyBtn = document.getElementById("copyBtn");
-    const shareBtn = document.getElementById("shareBtn");
-
-    if (copyBtn) {
-      copyBtn.addEventListener("click", function (e) {
-        e.preventDefault();
-        const text = document.body.innerText;
-        navigator.clipboard.writeText(text).then(() => {
-          alert("✅ Signal copied to clipboard!");
-        });
-      });
-    }
-
-    if (shareBtn) {
-      shareBtn.addEventListener("click", function (e) {
-        e.preventDefault();
-        const url = window.location.href;
-        const text = "Check out this multilingual signal from PROTOCORE:";
-        const shareUrl = "https://twitter.com/intent/tweet?text=" + encodeURIComponent(text) + "&url=" + encodeURIComponent(url);
-        window.open(shareUrl, "_blank");
-      });
-    }
-  });
-</script>
-
-
-
   <div class='section'>
     <h2>🧠 Live Signal Generator</h2>
-    <button onclick="regenerateSignal('$lang')">🔁 Generate New Signal</button>
-    <pre id="live-signal" style="margin-top:1rem; background:#222; padding:1rem; border:1px solid #0ff;">🧠 Click the button to generate a new signal...</pre>
+    <button id="generateSignalBtn">🔁 Generate New Signal</button>
+    <pre id="live-signal">🧠 Click the button to generate a new signal...</pre>
   </div>
 
   <script src="https://js.puter.com/v2/"></script>
   <script>
-    function regenerateSignal(lang) {
-      const prompt = `Generate a multilingual signal in ${lang} with context, insight, recommendation, and a reflective question. Format it clearly.`;
-      puter.ai.chat(prompt).then(response => {
-        document.getElementById("live-signal").innerText = response;
-      }).catch(() => {
-        document.getElementById("live-signal").innerText = "⚠️ Failed to generate signal.";
-      });
-    }
+    document.addEventListener("DOMContentLoaded", function () {
+      const copyBtn = document.getElementById("copyBtn");
+      const shareBtn = document.getElementById("shareBtn");
+      const generateBtn = document.getElementById("generateSignalBtn");
+      const output = document.getElementById("live-signal");
+      const lang = "$lang";
 
-    document.getElementById("copyBtn").addEventListener("click", function(e) {
-      e.preventDefault();
-      const text = document.body.innerText;
-      navigator.clipboard.writeText(text).then(() => {
-        alert("✅ Signal copied to clipboard!");
-      });
-    });
+      if (copyBtn) {
+        copyBtn.addEventListener("click", function (e) {
+          e.preventDefault();
+          const text = document.body.innerText;
+          navigator.clipboard.writeText(text).then(() => {
+            alert("✅ Signal copied to clipboard!");
+          });
+        });
+      }
 
-    document.getElementById("shareBtn").addEventListener("click", function(e) {
-      e.preventDefault();
-      const url = window.location.href;
-      const text = "Check out this multilingual signal from PROTOCORE:";
-      const shareUrl = "https://twitter.com/intent/tweet?text=" + encodeURIComponent(text) + "&url=" + encodeURIComponent(url);
-      window.open(shareUrl, "_blank");
+      if (shareBtn) {
+        shareBtn.addEventListener("click", function (e) {
+          e.preventDefault();
+          const url = window.location.href;
+          const text = "Check out this multilingual signal from PROTOCORE:";
+          const tweet = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`;
+          window.open(tweet, "_blank");
+        });
+      }
+
+      if (generateBtn && output) {
+        generateBtn.addEventListener("click", async function () {
+          output.textContent = "⏳ Generating signal...";
+          const prompt = `Generate a multilingual signal in ${lang} with context, insight, recommendation, and a reflective question. Format it clearly.`;
+          try {
+            const response = await puter.ai.chat(prompt);
+            output.textContent = response;
+          } catch (e) {
+            output.textContent = "⚠️ Failed to generate signal.";
+          }
+        });
+      }
     });
   </script>
 </body>
 </html>
 "@
 
-  $html | Out-File -Encoding UTF8 $filePath
-  Write-Host "✅ صفحة $lang تم توليدها: $filePath"
-}
 # === توليد index.html
 
 # === توليد index.html ديناميكيًا بتصميم محسّن وتفاعل ذكي
