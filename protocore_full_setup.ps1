@@ -65,11 +65,11 @@ $signalFiles = Get-ChildItem "$signalsDir" -Filter "P-*.html"
 foreach ($file in $signalFiles) {
   $content = Get-Content $file.FullName -Raw
   if ($content -match "<h1>(P-\d+)\s+//\s+(.+?)</h1>") {
-    $pid = $matches[1]
-    $ptitle = $matches[2]
-    $entry = "  <li><a href='signals/$($file.Name)'>$pid — $ptitle</a></li>"
-    $entries += $entry
-  }
+  $pcode = $matches[1]
+  $ptitle = $matches[2]
+  $entry = "  <li><a href='signals/$($file.Name)'>$pcode — $ptitle</a></li>"
+  $entries += $entry
+}
 }
 
 # === index.html ===
