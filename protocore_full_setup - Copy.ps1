@@ -154,21 +154,17 @@ foreach ($lang in $languages) {
   Write-Host "✅ صفحة $lang تم توليدها: $filePath"
 }
 # === توليد index.html
-# === توليد index.html فقط إذا لم يكن موجودًا
-$indexPath = Join-Path $projectRoot "index.html"
-if (-not (Test-Path $indexPath)) {
-    $signalFiles = Get-ChildItem -Path "$projectRoot/signals" -Recurse -Filter "*.html" | Sort-Object LastWriteTime -Descending
-    $signalMap = @{}
-    foreach ($file in $signalFiles) {
-      $relPath = $file.FullName.Replace($projectRoot, "").Replace("\", "/").TrimStart("/")
-      $name = [System.IO.Path]::GetFileNameWithoutExtension($file.Name)
-      $lang = $name.Split(".")[-1]
-      $slug = $name.Substring(0, $name.Length - $lang.Length - 1)
-      if (-not $signalMap.ContainsKey($slug)) { $signalMap[$slug] = @{} }
-      $signalMap[$slug][$lang] = $relPath
-    }
-
-    $indexHtml = @"
+$signalFiles = Get-ChildItem -Path "$projectRoot/signals" -Recurse -Filter "*.html" | Sort-Object LastWriteTime -Descending
+$signalMap = @{}
+foreach ($file in $signalFiles) {
+  $relPath = $file.FullName.Replace($projectRoot, "").Replace("\", "/").TrimStart("/")
+  $name = [System.IO.Path]::GetFileNameWithoutExtension($file.Name)
+  $lang = $name.Split(".")[-1]
+  $slug = $name.Substring(0, $name.Length - $lang.Length - 1)
+  if (-not $signalMap.ContainsKey($slug)) { $signalMap[$slug] = @{} }
+  $signalMap[$slug][$lang] = $relPath
+}
+$indexHtml = @"
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -186,22 +182,16 @@ if (-not (Test-Path $indexPath)) {
   <h1>📡 PROTOCORE – Signal Archive</h1>
   <p>Latest multilingual generative signals:</p>
 "@
-
-    foreach ($slug in $signalMap.Keys) {
-      $indexHtml += "<div class='signal'><strong>$slug</strong><div class='langs'>"
-      foreach ($lang in $signalMap[$slug].Keys) {
-        $path = $signalMap[$slug][$lang]
-        $indexHtml += "<a href='$path'>[$lang]</a>"
-      }
-      $indexHtml += "</div></div>`n"
-    }
-
-    $indexHtml += "</body></html>"
-    $indexHtml | Out-File -Encoding UTF8 $indexPath
-    Write-Host "✅ index.html تم توليده لأول مرة فقط"
-} else {
-    Write-Host "⚠️ index.html موجود مسبقًا — لم يتم تغييره"
+foreach ($slug in $signalMap.Keys) {
+  $indexHtml += "<div class='signal'><strong>$slug</strong><div class='langs'>"
+  foreach ($lang in $signalMap[$slug].Keys) {
+    $path = $signalMap[$slug][$lang]
+    $indexHtml += "<a href='$path'>[$lang]</a>"
+  }
+  $indexHtml += "</div></div>`n"
 }
+$indexHtml += "</body></html>"
+$indexHtml | Out-File -Encoding UTF8 (Join-Path $projectRoot "index.html")
 
 # === توليد sitemap.xml
 $sitemap = @()
