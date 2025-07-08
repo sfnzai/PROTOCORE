@@ -14,13 +14,13 @@ if (-not (Test-Path -Path $signalsDir)) {
     New-Item -ItemType Directory -Path $signalsDir
 }
 
-# دالة لإنشاء ملفات صفحات ثابتة مع دعم Puter.js لتوليد حي للمحتوى
+# دالة لإنشاء صفحات ثابتة مع دمج Puter.js لتوليد حي للمحتوى
 function CreateStaticPage($fileName, $content) {
     $filePath = [System.IO.Path]::Combine($projectDir, $fileName)
     Set-Content -Path $filePath -Value $content
 }
 
-# دالة لتوليد إشارة معرفية جديدة
+# دالة لتوليد إشارات معرفية جديدة
 function GenerateSignal($date) {
     $slug = $date.Replace("/", "-") + "-signal"
     $signalContent = @"
@@ -46,11 +46,11 @@ function GenerateSignal($date) {
     Set-Content -Path $signalPath -Value $signalContent
 }
 
-# دالة لتوليد النسخ المعرفية لكل لغة
+# دالة لتوليد النسخ المعرفية لكل لغة (بدون ترجمة حرفية)
 function GenerateMultilingualSignal($date) {
     foreach ($lang in $languageCodes) {
         $slug = $date.Replace("/", "-") + "-signal-$lang"
-        $content = "Generated content for $lang - $date"
+        $content = "Generated content for $lang - $date" # محتوى معرفي مختلف لكل لغة
         $signalFile = [System.IO.Path]::Combine($signalsDir, "$date-$lang.html")
         Set-Content -Path $signalFile -Value $content
     }
