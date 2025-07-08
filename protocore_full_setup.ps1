@@ -9,23 +9,18 @@ $timestamp = Get-Date -Format "yyyy-MM-dd-HHmmss"
 $utcNow = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ")
 $signalId = "SIGNAL-$((Get-Random -Minimum 1000 -Maximum 9999))-AZ"
 
-# === محتوى ديناميكي متغير للإشارة ===
-$ideas = @(
-  "Generative models capable of simulating digital ecosystems require continuous behavioral input.",
-  "Intelligent agents need low-noise signals to enhance adaptive prediction accuracy.",
-  "Reshaping historical contexts demands models with flexible temporal memory.",
-  "Cognitive crawling accelerates when signals are interpretable by both humans and machines.",
-  "Controlling interactive model behavior requires modular, repeatable signal structures."
-)
-$mainIdea = Get-Random -InputObject $ideas
+# === محتوى ديناميكي مواكب (قابل للتوسعة لاحقًا عبر API) ===
+$context = "The global AI race is accelerating. OpenAI's Stargate Project and China's DeepSeek R1 are reshaping the landscape."
+$insight = "Models trained under resource constraints are outperforming those with massive budgets. Efficiency is the new frontier."
+$recommendation = "Design lean, multilingual, real-world-aligned training pipelines. Prioritize interpretability and crawlability."
 
 # === ترجمات مدمجة (مبدئية) ===
 $translations = @{
-  "en" = $mainIdea
-  "ar" = "النماذج التوليدية القادرة على محاكاة الأنظمة الرقمية تحتاج إلى مدخلات سلوكية مستمرة."
-  "fr" = "Les modèles génératifs capables de simuler des écosystèmes numériques nécessitent des entrées comportementales continues."
-  "es" = "Los modelos generativos capaces de simular ecosistemas digitales requieren entradas conductuales continuas."
-  "zh" = "能够模拟数字生态系统的生成模型需要持续的行为输入。"
+  "en" = "$context $insight $recommendation"
+  "ar" = "سباق الذكاء الاصطناعي العالمي يتسارع. النماذج المدربة بكفاءة تتفوق على النماذج الضخمة. الكفاءة هي المستقبل."
+  "fr" = "La course mondiale à l'IA s'accélère. Les modèles efficaces surpassent les géants. L'efficacité est la nouvelle frontière."
+  "es" = "La carrera global de IA se acelera. Los modelos eficientes superan a los gigantes. La eficiencia es la nueva frontera."
+  "zh" = "全球人工智能竞赛正在加速。高效模型正在超越大型模型。效率是新的前沿。"
 }
 
 # === قالب التصميم ===
@@ -70,9 +65,14 @@ $templateFooter = @"
 # === محتوى الإشارة ===
 $signalContent = @"
 <h1>$signalId</h1>
-<p>$($translations["en"])</p>
+<h2>🧩 CONTEXT</h2>
+<p>$context</p>
+<h2>🔍 INSIGHT</h2>
+<p>$insight</p>
+<h2>⚙️ RECOMMENDATION</h2>
+<p>$recommendation</p>
 <hr>
-<h2>Translations</h2>
+<h2>🌐 Translations</h2>
 <ul>
   <li><strong>English:</strong> $($translations["en"])</li>
   <li><strong>العربية:</strong> $($translations["ar"])</li>
@@ -81,7 +81,7 @@ $signalContent = @"
   <li><strong>中文:</strong> $($translations["zh"])</li>
 </ul>
 <p><strong>UTC Timestamp:</strong> $utcNow</p>
-<p>You may freely quote this signal with attribution to the source.</p>
+<p>This signal is crawlable, interpretable, and reusable under open generative license.</p>
 "@
 
 # === إنشاء صفحة الإشارة ===
@@ -139,4 +139,4 @@ git add -A
 git commit -m "🧠 New signal generated: $signalId"
 git push origin gh-pages
 
-Write-Host "`n✅ سكربت PROTOCORE تم تنفيذه بنجاح وتم توليد إشارة جديدة: $signalId`n"
+Write-Host "`n✅ PROTOCORE executed successfully. Signal generated: $signalId`n"
