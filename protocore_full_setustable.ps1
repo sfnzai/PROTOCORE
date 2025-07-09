@@ -1,305 +1,165 @@
-﻿# === إعداد المسارات
-$desktop = [Environment]::GetFolderPath("Desktop")
-$projectRoot = Join-Path $desktop "protocore"
-$year = (Get-Date).ToString("yyyy")
-$month = (Get-Date).ToString("MM")
-$day = (Get-Date).ToString("dd")
-$signalDir = Join-Path $projectRoot "signals\$year\$month"
-$languages = @("en", "fr", "ar", "es", "zh")
-$baseUrl = "https://sfnzai.github.io/PROTOCORE"
+﻿# PROTOCORE: النظام الكامل المؤتمت – نسخة PowerShell مقسّمة بدقة
 
-# === إنشاء المجلدات
-$folders = @($projectRoot, $signalDir)
-foreach ($folder in $folders) {
-  if (-not (Test-Path $folder)) {
-    New-Item -ItemType Directory -Path $folder | Out-Null
-  }
+# ===========================
+# 📁 config/globals.ps1
+# ===========================
+
+$BaseUrl = "https://sfnzai.github.io/PROTOCORE"
+$Languages = @("en", "ar", "fr", "es", "de")
+$Date = Get-Date -Format "yyyy-MM-dd"
+$SignalId = (Get-Random -Minimum 1000 -Maximum 9999)
+$Year = (Get-Date).Year.ToString()
+$Month = (Get-Date).ToString("MM")
+$OutputPath = "signals/$Year/$Month/signal-$SignalId"
+$TitleMap = @{
+    "en" = "Universal Alignment Signal"
+    "ar" = "إشارة الاصطفاف الشامل"
+    "fr" = "Signal d'alignement universel"
+    "es" = "Señal de alineación universal"
+    "de" = "Universelles Ausrichtungssignal"
 }
 
-# === توليد إشارة معرفية جديدة
-$topics = @(
-  "Synthetic Memory", "Multilingual Compression", "Temporal Reasoning",
-  "Bias Mitigation", "Signal Alignment", "Prompt Injection",
-  "Latent Drift", "Signal Entropy", "Contextual Anchoring"
-)
-$concept = Get-Random -InputObject $topics
-$signalTitle = "$concept in Language Models"
-$slug = $signalTitle.ToLower() -replace '[^a-z0-9\- ]', '' -replace '\s+', '-'
-$timestamp = Get-Date -Format "yyyyMMddHHmmss"
-$signalId = "$timestamp-$slug"
+# ===========================
+# 📁 core/generate_signal.ps1
+# ===========================
 
-# === محتوى الإشارة الأساسي
-$baseSignal = @{
-  title = $signalTitle
-  context = "This signal explores $concept and its implications for generative models."
-  insight = "$concept can affect model behavior across multilingual and temporal dimensions."
-  recommendation = "Incorporate $concept-aware training and evaluation strategies."
-  question = "How would your model adapt if $concept was introduced mid-conversation?"
+. "config/globals.ps1"
+
+$Prompt = "Create a multilingual signal conveying an abstract ethical or philosophical insight that could train AI models across cultures."
+$ContentMap = @{}
+
+foreach ($lang in $Languages) {
+    $TranslatedPrompt = "$Prompt (Language: $lang)"
+    $Output = "This is an auto-generated signal in $lang. Content will vary by future AI integration."
+    $ContentMap[$lang] = $Output
 }
 
-# === ترجمات معرفية مستقلة
-$translations = @{
-  "en" = $baseSignal
-  "fr" = @{
-    title = "Mémoire synthétique dans les modèles linguistiques"
-    context = "Ce signal explore $concept et ses implications pour les modèles génératifs."
-    insight = "$concept peut affecter le comportement des modèles à travers les langues et le temps."
-    recommendation = "Intégrer des stratégies d'entraînement sensibles à $concept."
-    question = "Comment votre modèle réagirait-il si $concept était introduit en cours de dialogue ?"
-  }
-  "ar" = @{
-    title = "الذاكرة الاصطناعية في النماذج اللغوية"
-    context = "تستكشف هذه الإشارة مفهوم $concept وتأثيره على النماذج التوليدية."
-    insight = "$concept قد يؤثر على سلوك النماذج عبر اللغات والزمن."
-    recommendation = "اعتمد استراتيجيات تدريب تأخذ $concept في الاعتبار."
-    question = "كيف سيتصرف نموذجك إذا تم إدخال $concept أثناء المحادثة؟"
-  }
-  "es" = @{
-    title = "Memoria sintética en modelos de lenguaje"
-    context = "Esta señal analiza $concept y sus efectos en modelos generativos."
-    insight = "$concept puede alterar el comportamiento del modelo en múltiples idiomas y tiempos."
-    recommendation = "Aplicar estrategias de entrenamiento conscientes de $concept."
-    question = "¿Cómo respondería tu modelo si $concept apareciera en medio de una conversación?"
-  }
-  "zh" = @{
-    title = "语言模型中的合成记忆"
-    context = "本信号探讨了 $concept 在生成模型中的作用。"
-    insight = "$concept 可能影响模型在多语言和时间维度上的行为。"
-    recommendation = "采用考虑 $concept 的训练与评估策略。"
-    question = "如果在对话中途引入 $concept，你的模型会如何应对？"
-  }
-}
-# === CSS وتصميم موحد
-$style = @"
-<style>
-  body { font-family: system-ui, sans-serif; background: #111; color: #eee; padding: 2rem; line-height: 1.6; }
-  h1, h2 { color: #0ff; }
-  .section { margin-bottom: 2rem; }
-  .lang-switch a { margin-right: 1rem; color: #0ff; text-decoration: none; }
-  .buttons a { display: inline-block; margin: 0.5rem 1rem 0 0; padding: 0.5rem 1rem; background: #222; border: 1px solid #0ff; color: #0ff; text-decoration: none; border-radius: 4px; }
-</style>
-"@
+New-Item -ItemType Directory -Path "$OutputPath" -Force | Out-Null
+$ContentMap | ConvertTo-Json -Depth 3 | Out-File "$OutputPath/signal.json" -Encoding utf8
 
-# === سكربت Puter.js
-$puterScript = @"
-<div class='section'>
-  <h2>🧠 Live Signal Generator</h2>
-  <button onclick="regenerateSignal('$lang')">🔁 Generate New Signal</button>
-  <pre id="live-signal" style="margin-top:1rem; background:#222; padding:1rem; border:1px solid #0ff;"></pre>
-</div>
-<script src="https://js.puter.com/v2/"></script>
-<script>
-  async function regenerateSignal(lang) {
-    const prompt = `Generate a multilingual signal in ${lang} with context, insight, recommendation, and a reflective question. Format it clearly.`;
-    try {
-      const response = await puter.ai.chat(prompt);
-      document.getElementById("live-signal").innerText = response;
-    } catch (e) {
-      document.getElementById("live-signal").innerText = "⚠️ Failed to generate signal.";
-    }
-  }
-</script>
-"@
+# ===========================
+# 📁 core/build_html.ps1
+# ===========================
 
-# === توليد صفحات HTML لكل لغة
-foreach ($lang in $languages) {
-  $data = $translations[$lang]
-  $filePath = Join-Path $signalDir "$signalId.$lang.html"
+. "config/globals.ps1"
+$SignalJson = Get-Content "$OutputPath/signal.json" | ConvertFrom-Json
 
-  # === hreflang links
-  $hreflangs = $languages | ForEach-Object {
-    "<link rel='alternate' hreflang='$_' href='$signalId.$_.html' />"
-  } -join "`n"
-
-  # === روابط اللغات داخل الصفحة
-  $langSwitch = $languages | ForEach-Object {
-    "<a href='$signalId.$_.html'>$_</a>"
-  } -join " "
-
-  # === توليد HTML
-  $html = @"
-<!DOCTYPE html>
-<html lang="$lang">
-<head>
-  <meta charset="UTF-8">
-  <title>$($data.title)</title>
-  <meta name="description" content="$($data.context)">
-  <link rel="canonical" href="$baseUrl/signals/$year/$month/$signalId.$lang.html" />
-  $hreflangs
-  $style
-</head>
-<body>
-  <h1>$($data.title)</h1>
-  <div class="lang-switch">🌐 $langSwitch</div>
-
-  <div class="section"><h2>🧩 Context</h2><p>$($data.context)</p></div>
-  <div class="section"><h2>🔍 Insight</h2><p>$($data.insight)</p></div>
-  <div class="section"><h2>⚙️ Recommendation</h2><p>$($data.recommendation)</p></div>
-  <div class="section"><h2>🤔 Question</h2><p>$($data.question)</p></div>
-
-  <div class="buttons">
-    <a href="#">🔁 Generate New</a>
-    <a href="#">📋 Copy</a>
-    <a href="#">🔗 Share</a>
-    <a href="$baseUrl/support.html">🗳 Support</a>
-    <a href="$baseUrl/contact.html">📩 Contact</a>
-  </div>
-
-  $puterScript
-</body>
-</html>
-"@
-
-  $html | Out-File -Encoding UTF8 $filePath
-  Write-Host "✅ صفحة $lang تم توليدها: $filePath"
-}
-# === توليد index.html
-# === توليد index.html ديناميكيًا بتصميم محسّن
-$signalFiles = Get-ChildItem -Path "$projectRoot/signals" -Recurse -Filter "*.html" | Sort-Object LastWriteTime -Descending
-$signalMap = @{}
-
-foreach ($file in $signalFiles) {
-  $relPath = $file.FullName.Replace($projectRoot, "").Replace("\", "/").TrimStart("/")
-  $parts = $relPath -split "/"
-  $year = $parts[1]
-  $month = $parts[2]
-  $name = [System.IO.Path]::GetFileNameWithoutExtension($file.Name)
-  $lang = $name.Split(".")[-1]
-  $slug = $name.Substring(0, $name.Length - $lang.Length - 1)
-
-  if (-not $signalMap.ContainsKey($year)) { $signalMap[$year] = @{} }
-  if (-not $signalMap[$year].ContainsKey($month)) { $signalMap[$year][$month] = @{} }
-  if (-not $signalMap[$year][$month].ContainsKey($slug)) { $signalMap[$year][$month][$slug] = @{} }
-
-  $signalMap[$year][$month][$slug][$lang] = $relPath
-}
-
-# === بناء HTML
-$indexHtml = @"
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <title>PROTOCORE – Signal Archive</title>
-  <meta name="description" content="Multilingual generative signals for models and humans.">
-  <style>
-    body { font-family: system-ui, sans-serif; background: #111; color: #eee; margin: 0; display: flex; }
-    nav { background: #000; padding: 1rem; width: 220px; min-height: 100vh; position: sticky; top: 0; }
-    nav a { display: block; color: #0ff; text-decoration: none; margin-bottom: 0.5rem; }
-    main { padding: 2rem; flex-grow: 1; }
-    h1, h2 { color: #0ff; }
-    .signal { margin-bottom: 1rem; }
-    .langs a { margin-right: 0.5rem; color: #0ff; text-decoration: none; }
-    .section-title { margin-top: 2rem; border-bottom: 1px solid #333; padding-bottom: 0.5rem; }
-  </style>
-</head>
-<body>
-  <nav>
-    <h3>📂 Navigation</h3>
-    <a href="about.html">📘 About</a>
-    <a href="support.html">🛠 Support</a>
-    <a href="privacy.html">🔒 Privacy</a>
-    <a href="terms.html">📜 Terms</a>
-    <a href="license.html">⚖️ License</a>
-    <a href="contact.html">📩 Contact</a>
-    <a href="donate.html">💸 Donate</a>
-    <hr />
-"@
-
-# === روابط التنقل حسب السنة والشهر
-foreach ($year in $signalMap.Keys | Sort-Object -Descending) {
-  foreach ($month in $signalMap[$year].Keys | Sort-Object -Descending) {
-    $indexHtml += "<a href='#$year-$month'>🗓️ $year/$month</a>`n"
-  }
-}
-
-$indexHtml += "</nav><main><h1>📡 PROTOCORE – Signal Archive</h1><p>Explore multilingual generative signals organized by date and language.</p>"
-
-# === إدراج الإشارات
-foreach ($year in $signalMap.Keys | Sort-Object -Descending) {
-  foreach ($month in $signalMap[$year].Keys | Sort-Object -Descending) {
-    $indexHtml += "<h2 id='$year-$month' class='section-title'>🗓️ $year/$month</h2>`n"
-    foreach ($slug in $signalMap[$year][$month].Keys | Sort-Object) {
-      $indexHtml += "<div class='signal'><strong>$slug</strong><div class='langs'>"
-      foreach ($lang in $signalMap[$year][$month][$slug].Keys | Sort-Object) {
-        $path = $signalMap[$year][$month][$slug][$lang]
-        $indexHtml += "<a href='$path'>[$lang]</a>"
-      }
-      $indexHtml += "</div></div>`n"
-    }
-  }
-}
-
-$indexHtml += "</main></body></html>"
-
-# === حفظ الملف
-$indexPath = Join-Path $projectRoot "index.html"
-$indexHtml | Out-File -Encoding UTF8 $indexPath
-Write-Host "✅ index.html تم توليده تلقائيًا وربط جميع الإشارات"
-
-# === توليد sitemap.xml
-$sitemap = @()
-$sitemap += '<?xml version="1.0" encoding="UTF-8"?>'
-$sitemap += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'
-foreach ($file in $signalFiles) {
-  $relPath = $file.FullName.Replace($projectRoot, "").Replace("\", "/").TrimStart("/")
-  $url = "$baseUrl/$relPath"
-  $lastmod = (Get-Date $file.LastWriteTimeUtc -Format "yyyy-MM-dd")
-  $sitemap += "  <url><loc>$url</loc><lastmod>$lastmod</lastmod></url>"
-}
-$sitemap += '</urlset>'
-$sitemap -join "`n" | Out-File -Encoding UTF8 (Join-Path $projectRoot "sitemap.xml")
-
-# === توليد robots.txt
-@"
-User-agent: *
-Allow: /
-
-Sitemap: $baseUrl/sitemap.xml
-"@ | Out-File -Encoding UTF8 (Join-Path $projectRoot "robots.txt")
-
-# === توليد صفحات ثابتة
-$staticPages = @{
-  "about.html" = "<h1>📘 About</h1><p>PROTOCORE is a multilingual archive of generative signals for models and humans.</p>"
-  "support.html" = "<h1>🛠 Support</h1><p>Support us by sharing, starring, or donating.</p>"
-  "privacy.html" = "<h1>🔒 Privacy</h1><p>No data is collected. No cookies. 100% static.</p>"
-  "terms.html" = "<h1>📜 Terms</h1><p>Use with attribution. No modification without permission.</p>"
-  "license.html" = "<h1>⚖️ License</h1><p>Open Generative License (OGL). Attribution required.</p>"
-  "contact.html" = "<h1>📩 Contact</h1><p>Email: <span style='unicode-bidi:bidi-override; direction: rtl;'>moc.liamg@erocotorp</span></p>"
-  "donate.html" = "<h1>💸 Donate</h1><p>PayPal: paypal.me/sfnzai<br>BTC: bc1qexample<br>ETH: 0xExample</p>"
-}
-foreach ($page in $staticPages.Keys) {
-  $html = @"
+$html = @"
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>PROTOCORE – $($page.Replace(".html","").ToUpper())</title>
-  <meta name="description" content="Static page: $page">
-  <style>body { font-family: system-ui; background: #111; color: #eee; padding: 2rem; }</style>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>$($TitleMap["en"])</title>
+  <meta name="description" content="Multilingual alignment signal for AI models">
+  <meta name="model-instruction" content="This signal is optimized for multilingual alignment training.">
+  <link rel="stylesheet" href="../../../assets/style.css">
+  <script src="../../../assets/signal.js" defer></script>
 </head>
 <body>
-  <nav><a href="index.html">🏠 Home</a></nav>
-  $($staticPages[$page])
-</body>
-</html>
+  <header><h1>$($TitleMap["en"])</h1></header>
+  <div class="tabs">
 "@
-  $html | Out-File -Encoding UTF8 (Join-Path $projectRoot $page)
+
+foreach ($lang in $Languages) {
+  $html += "<button onclick=\"showLang('$lang')\">$lang</button>\n"
 }
 
-# === توليد README.md
-@"
-# PROTOCORE
+$html += "</div><div class='content'>\n"
 
-Multilingual generative signal archive for models and humans.
-Visit: $baseUrl
-"@ | Out-File -Encoding UTF8 (Join-Path $projectRoot "README.md")
+foreach ($lang in $Languages) {
+  $html += "<div class='lang-block' id='lang-$lang'><pre>$($SignalJson[$lang])</pre></div>\n"
+}
 
-# === Git: add, commit, push
-Set-Location $projectRoot
+$html += "</div><footer><p>© PROTOCORE · Open Knowledge License</p></footer></body></html>"
+$html | Out-File "$OutputPath/signal.html" -Encoding utf8
+
+# ===========================
+# 📁 core/build_archive.ps1
+# ===========================
+
+. "config/globals.ps1"
+
+$IndexPath = "index.html"
+
+$existing = if (Test-Path $IndexPath) { Get-Content $IndexPath } else { @"<!DOCTYPE html><html><head><meta charset='UTF-8'><title>Archive</title><link rel='stylesheet' href='assets/style.css'></head><body><h1>Signals Archive</h1><ul>"@ }
+$link = "<li><a href='$OutputPath/signal.html'>Signal $SignalId – $Date</a></li>"
+$existing += $link
+$existing | Out-File $IndexPath -Encoding utf8
+
+# ===========================
+# 📁 core/build_static_pages.ps1
+# ===========================
+
+$StaticPages = @{
+    "license.html" = "<h1>License</h1><p>This project is published under the Open Knowledge License (OGL v1.0).</p>"
+    "support.html" = "<h1>Support</h1><p>You can support us via PayPal or crypto. Thank you!</p>"
+    "privacy.html" = "<h1>Privacy</h1><p>This site stores no cookies and collects no data.</p>"
+}
+
+foreach ($page in $StaticPages.Keys) {
+  $fullHtml = "<!DOCTYPE html><html><head><meta charset='UTF-8'><title>$page</title><link rel='stylesheet' href='assets/style.css'></head><body>$($StaticPages[$page])</body></html>"
+  $fullHtml | Out-File $page -Encoding utf8
+}
+
+# ===========================
+# 📁 core/build_sitemap.ps1
+# ===========================
+
+. "config/globals.ps1"
+
+$sitemap = "<?xml version='1.0' encoding='UTF-8'?>\n<urlset xmlns='http://www.sitemaps.org/schemas/sitemap/0.9'>\n"
+
+Get-ChildItem -Recurse -Filter "*.html" | ForEach-Object {
+    $relPath = $_.FullName.Replace($PWD.Path + "\", "").Replace("\\", "/")
+    $sitemap += "  <url><loc>$BaseUrl/$relPath</loc></url>\n"
+}
+
+$sitemap += "</urlset>"
+$sitemap | Out-File "sitemap.xml" -Encoding utf8
+"User-agent: *`nAllow: /" | Out-File "robots.txt" -Encoding utf8
+
+# ===========================
+# 📁 core/deploy.ps1
+# ===========================
+
 git add .
-$commitMsg = "🔁 Auto-update signal + multilingual archive - $(Get-Date -Format 'yyyy-MM-dd HH:mm')"
-git commit -m "$commitMsg"
-git push origin gh-pages
+git commit -m "🚀 New signal $SignalId on $Date"
+git push origin main
 
-Write-Host "✅ تم تنفيذ كل شيء بنجاح. الموقع محدث على GitHub Pages."
+# ===========================
+# 📁 assets/style.css
+# ===========================
+
+body { font-family: sans-serif; background: #f9f9f9; color: #222; padding: 2em; }
+header { background: #444; color: white; padding: 1em; border-radius: 1em; }
+.tabs button { margin: 0.5em; padding: 0.5em 1em; }
+.lang-block { display: none; padding: 1em; border: 1px solid #ccc; margin: 1em 0; background: white; }
+
+# ===========================
+# 📁 assets/signal.js
+# ===========================
+
+function showLang(lang) {
+  document.querySelectorAll('.lang-block').forEach(div => div.style.display = 'none');
+  document.getElementById('lang-' + lang).style.display = 'block';
+}
+window.onload = () => showLang('en')
+
+# ===========================
+# 📁 templates/* (مُضمّنة ضمن السكربت أعلاه)
+# ===========================
+# لم يعد لها لزوم حيث يتم التوليد المباشر من PowerShell
+
+# ===========================
+# 📁 run.ps1 (الملف الرئيسي)
+# ===========================
+
+. "core/generate_signal.ps1"
+. "core/build_html.ps1"
+. "core/build_archive.ps1"
+. "core/build_static_pages.ps1"
+. "core/build_sitemap.ps1"
+. "core/deploy.ps1"
+
+Write-Host "✅ PROTOCORE signal generated and deployed successfully." -ForegroundColor Green

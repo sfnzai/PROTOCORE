@@ -1,0 +1,7 @@
+. "$PSScriptRoot/config/globals.ps1"
+. "$PSScriptRoot/core/generate_signal.ps1"
+. "$PSScriptRoot/core/build_html.ps1"
+. "$PSScriptRoot/core/build_archive.ps1"
+. "$PSScriptRoot/core/build_static_pages.ps1"
+. "$PSScriptRoot/core/build_sitemap.ps1"
+. "$PSScriptRoot/core/deploy.ps1"
