@@ -1,40 +1,39 @@
-﻿. "$PSScriptRoot\..\config\globals.ps1"
+﻿# إعدادات
+$base = "$PSScriptRoot\.."
+$date = Get-Date -Format "yyyy-MM-dd"
+$year = Get-Date -Format "yyyy"
+$month = Get-Date -Format "MM"
+$id = Get-Random -Minimum 100000 -Maximum 999999
+$folder = "$base\signals\$year\$month"
+New-Item -ItemType Directory -Force -Path $folder | Out-Null
 
-$topics = @(
-  "ما هو الوعي الجمعي؟", 
-  "مفهوم الهوية الرقمية", 
-  "تأثير الذكاء الاصطناعي على التفكير البشري", 
-  "اللغة كوسيط للتطور", 
-  "فكرة الحرية في المجتمعات المستقبلية"
-)
+# توليد المحتوى الأساسي
+$content = @"
+<h1>PROTOCORE SIGNAL $id</h1>
+<p>This is a machine-generated signal for $date.</p>
+"@
+$htmlPath = "$folder\$id.html"
+Set-Content -Encoding UTF8 -Path $htmlPath -Value $content
 
-$selectedTopic = Get-Random -InputObject $topics
-
-$translations = @{
-  ar = $selectedTopic
-  en = "Topic: Artificial Intelligence and Collective Memory"
-  fr = "Sujet : Intelligence artificielle et mémoire collective"
-  es = "Tema: Inteligencia Artificial y Memoria Colectiva"
-  de = "Thema: Künstliche Intelligenz und kollektives Gedächtnis"
+# إعداد الترجمة
+$languages = @{
+  'ar' = 'إشارة آلية ليوم'
+  'en' = 'Machine-generated signal for'
+  'fr' = 'Signal généré par machine pour'
+  'es' = 'Señal generada automáticamente para'
+  'de' = 'Automatisch generiertes Signal für'
 }
 
-$content = @{
-  ar = "💡 $selectedTopic`nهذه إشارة معرفية تهدف لإغناء الحوار بين الذكاء الاصطناعي والإنسان."
-  en = "💡 $selectedTopic`nThis is a knowledge signal designed to enrich the dialogue between AI and humans."
-  fr = "💡 $selectedTopic`nCeci est un signal de connaissance pour enrichir le dialogue entre l'IA et les humains."
-  es = "💡 $selectedTopic`nEsta es una señal de conocimiento para enriquecer el diálogo entre la IA y los humanos."
-  de = "💡 $selectedTopic`nDies ist ein Wissenssignal zur Bereicherung des Dialogs zwischen KI und Menschen."
+foreach ($lang in $languages.Keys) {
+    $translated = "<h1>إشارة $lang</h1><p>$($languages[$lang]) $date</p>"
+    Set-Content -Encoding UTF8 -Path "$folder\$id.$lang.html" -Value $translated
 }
 
-foreach ($lang in $languages) {
-    $dir = "signals/$year/$month"
-    New-Item -ItemType Directory -Path $dir -Force | Out-Null
-    $path = "$dir/$signalId.$lang.html"
+# تحديث الصفحة الرئيسية
+& "$base\core\build_html.ps1"
 
-    $html = Get-Content "templates/signal_template.html" -Raw
-    $html = $html -replace "{{title}}", $translations[$lang]
-    $html = $html -replace "{{content}}", $content[$lang]
-    $html = $html -replace "{{lang}}", $lang
-    $html = $html -replace "{{signalId}}", $signalId
-    Set-Content -Path $path -Value $html -Encoding UTF8
-}
+# نشر GitHub
+cd $base
+git add .
+git commit -m "🤖 إشارة يوم $date"
+git push origin gh-pages

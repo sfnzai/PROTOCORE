@@ -32,3 +32,5 @@ $combinedHtml += "</body></html>"
 
 $finalPath = "$dir/$signalId.html"
 Set-Content -Path $finalPath -Value $combinedHtml -Encoding UTF8
+
+git push origin gh-pages
