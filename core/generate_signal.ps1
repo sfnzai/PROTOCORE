@@ -1,4 +1,4 @@
-. "$PSScriptRoot\..\config\globals.ps1"
+﻿. "$PSScriptRoot\..\config\globals.ps1"
 
 $topics = @(
   "ما هو الوعي الجمعي؟", 
