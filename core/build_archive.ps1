@@ -1,4 +1,4 @@
-$indexContent = "<!DOCTYPE html><html lang='en'><head><meta charset='UTF-8'>"
+﻿$indexContent = "<!DOCTYPE html><html lang='en'><head><meta charset='UTF-8'>"
 $indexContent += "<title>PROTOCORE Archive</title><link rel='stylesheet' href='assets/style.css'>"
 $indexContent += "</head><body><h1>📚 PROTOCORE Archive</h1><ul>"
 
