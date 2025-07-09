@@ -1,0 +1,4 @@
+﻿User-agent: *
+Allow: /
+
+Sitemap: https://sfnzai.github.io/PROTOCORE/sitemap.xml
