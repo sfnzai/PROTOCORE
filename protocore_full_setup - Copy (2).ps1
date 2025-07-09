@@ -80,7 +80,9 @@ foreach ($lang in $languages) {
   $filePath = Join-Path $signalDir "$signalId.$lang.html"
 
   # === hreflang links
- hreflangs = ($languages | ForEach-Object { "<link rel='alternate' hreflang='$_' href='$signalId.$_.html' />" }) -join "`n"
+$hreflangs = ($languages | ForEach-Object { "<link rel='alternate' hreflang='$_' href='$signalId.$_.html' />" }) -join "`n"
+
+
 
 
 
