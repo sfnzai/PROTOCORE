@@ -1,17 +1,59 @@
-﻿$indexContent = "<!DOCTYPE html><html lang='en'><head><meta charset='UTF-8'>"
-$indexContent += "<title>PROTOCORE Archive</title><link rel='stylesheet' href='assets/style.css'>"
-$indexContent += "</head><body><h1>📚 PROTOCORE Archive</h1><ul>"
+﻿# === build_archive.ps1
+. "$PSScriptRoot\..\config\globals.ps1"
 
-$folders = Get-ChildItem -Path "signals" -Recurse -Directory
+$signalPages = Get-ChildItem -Path "$signalHtmlDir" -Recurse -Filter "*.html" | Sort-Object LastWriteTime -Descending
+$signalMap = @{}
 
-foreach ($folder in $folders) {
-    $files = Get-ChildItem -Path $folder.FullName -Filter "*.html" | Where-Object { $_.Name -notmatch "\.[a-z]{2}\.html$" }
-    foreach ($file in $files) {
-        $relativePath = $file.FullName.Replace((Get-Location).Path + "\", "").Replace("\", "/")
-        $indexContent += "<li><a href='$relativePath'>🔗 Signal $($file.BaseName)</a></li>"
-    }
+foreach ($page in $signalPages) {
+  $rel = $page.FullName.Replace($signalHtmlDir, "").Replace("\", "/").TrimStart("/")
+  $parts = $rel -split "/"
+  $year = $parts[0]
+  $month = $parts[1]
+  $filename = $parts[-1]
+  $slug = $filename.Replace(".html", "")
+  $nameParts = $slug -split "-"
+  $id = ($nameParts[0..2] -join "-")
+  $lang = $slug.Split(".")[-1]
+
+  if (-not $signalMap.ContainsKey($year)) { $signalMap[$year] = @{} }
+  if (-not $signalMap[$year].ContainsKey($month)) { $signalMap[$year][$month] = @{} }
+  if (-not $signalMap[$year][$month].ContainsKey($id)) { $signalMap[$year][$month][$id] = @{} }
+
+  $signalMap[$year][$month][$id][$lang] = $rel
 }
 
-$indexContent += "</ul><footer>PROTOCORE | Signals to train your mind and models 🧠</footer></body></html>"
+# === بناء HTML
+$indexHtml = @"
+<!DOCTYPE html>
+<html lang="$defaultLang">
+<head>
+  <meta charset="UTF-8">
+  <title>PROTOCORE Signal Archive</title>
+  <meta name="description" content="Explore multilingual generative signals for models and humans.">
+  <meta name="keywords" content="PROTOCORE, signals, AI, language models, archive, multilingual">
+  <link rel="stylesheet" href="assets/style.css" />
+</head>
+<body>
+  <h1>📡 PROTOCORE Archive</h1>
+"@
 
-Set-Content -Path "index.html" -Value $indexContent -Encoding UTF8
+foreach ($year in $signalMap.Keys | Sort-Object -Descending) {
+  foreach ($month in $signalMap[$year].Keys | Sort-Object -Descending) {
+    $indexHtml += "<h2>🗓️ $year/$month</h2>`n"
+    foreach ($id in $signalMap[$year][$month].Keys | Sort-Object) {
+      $indexHtml += "<div><strong>$id</strong><div class='langs'>"
+      foreach ($lang in $signalMap[$year][$month][$id].Keys | Sort-Object) {
+        $link = $signalMap[$year][$month][$id][$lang]
+        $indexHtml += "<a href='signals/$link'>[$lang]</a> "
+      }
+      $indexHtml += "</div></div>`n"
+    }
+  }
+}
+
+$indexHtml += "</body></html>"
+
+# حفظ الصفحة
+$indexPath = Join-Path $projectRoot "index.html"
+$indexHtml | Out-File -Encoding UTF8 $indexPath
+Write-Host "✅ أرشيف الإشارات جاهز: index.html"

@@ -1,39 +1,49 @@
-﻿# إعدادات
-$base = "$PSScriptRoot\.."
-$date = Get-Date -Format "yyyy-MM-dd"
-$year = Get-Date -Format "yyyy"
-$month = Get-Date -Format "MM"
-$id = Get-Random -Minimum 100000 -Maximum 999999
-$folder = "$base\signals\$year\$month"
-New-Item -ItemType Directory -Force -Path $folder | Out-Null
+﻿# === generate_signal.ps1
+param (
+  [string]$outputDir = "$PSScriptRoot\..\data"
+)
 
-# توليد المحتوى الأساسي
-$content = @"
-<h1>PROTOCORE SIGNAL $id</h1>
-<p>This is a machine-generated signal for $date.</p>
-"@
-$htmlPath = "$folder\$id.html"
-Set-Content -Encoding UTF8 -Path $htmlPath -Value $content
+. "$PSScriptRoot\..\config\globals.ps1"
 
-# إعداد الترجمة
-$languages = @{
-  'ar' = 'إشارة آلية ليوم'
-  'en' = 'Machine-generated signal for'
-  'fr' = 'Signal généré par machine pour'
-  'es' = 'Señal generada automáticamente para'
-  'de' = 'Automatisch generiertes Signal für'
+# التأكد من وجود مجلد البيانات
+if (-not (Test-Path $outputDir)) {
+  New-Item -ItemType Directory -Path $outputDir | Out-Null
 }
 
-foreach ($lang in $languages.Keys) {
-    $translated = "<h1>إشارة $lang</h1><p>$($languages[$lang]) $date</p>"
-    Set-Content -Encoding UTF8 -Path "$folder\$id.$lang.html" -Value $translated
+# === تحميل المواضيع من topics.txt
+$topics = Get-Content -Path $topicsPath | Where-Object { $_.Trim() -ne "" }
+$topic = Get-Random -InputObject $topics
+$signalId = "$dateStamp-" + ($topic -replace '\s+', '-').ToLower()
+
+# === محتوى الإشارة الأساسي لكل لغة
+$translations = @{}
+foreach ($lang in $languages) {
+  $translations[$lang] = @{
+    title         = "$topic in $lang"
+    context       = "This signal discusses the topic of $topic and its role in intelligent systems."
+    insight       = "$topic can shape outcomes in multilingual or temporal tasks."
+    recommendation = "Apply $topic-aware strategies in training pipelines."
+    question      = "How would your model behave if $topic emerged mid-decision?"
+  }
 }
 
-# تحديث الصفحة الرئيسية
-& "$base\core\build_html.ps1"
+# === هيكل JSON الموحد
+$signal = @{
+  id         = $signalId
+  topic      = $topic
+  timestamp  = (Get-Date).ToString("s")
+  languages  = $languages
+  sections   = $translations
+  meta       = @{
+    alignmentPurpose = "linguistic generalization and ethical modeling"
+    license          = "OGL-1.0"
+    generatedBy      = "PROTOCORE modular v2"
+  }
+}
 
-# نشر GitHub
-cd $base
-git add .
-git commit -m "🤖 إشارة يوم $date"
-git push origin gh-pages
+# === حفظ الإشارة بصيغة JSON
+$outputPath = Join-Path $outputDir "$signalId.json"
+$signal | ConvertTo-Json -Depth 5 | Set-Content -Encoding UTF8 $outputPath
+
+Write-Host "✅ تم توليد الإشارة: $signalId"
+Write-Host "📦 محفوظة في: $outputPath"
