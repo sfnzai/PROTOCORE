@@ -1,30 +1,29 @@
 ﻿# === build_html.ps1
-param (
-  [string]$inputJson = "$PSScriptRoot\..\data\*.json",
-  [string]$outputDir = "$PSScriptRoot\..\signals"
-)
-
 . "$PSScriptRoot\..\config\globals.ps1"
 
-# التأكد من المجلد
-if (-not (Test-Path $outputDir)) {
-  New-Item -ItemType Directory -Path $outputDir | Out-Null
-}
-
-# تحميل آخر ملف JSON
-$latest = Get-ChildItem -Path $inputJson | Sort-Object LastWriteTime -Descending | Select-Object -First 1
-if (-not $latest) {
-  Write-Host "⚠️ لا يوجد ملف JSON لإشارة"
+# 🔍 العثور على أحدث ملف JSON داخل /data/
+$latestSignal = Get-ChildItem -Path $signalDataDir -Filter "*.json" | Sort-Object LastWriteTime -Descending | Select-Object -First 1
+if (-not $latestSignal) {
+  Write-Host "⚠️ لا يوجد ملف إشارة في $signalDataDir"
   return
 }
 
-$signal = Get-Content $latest.FullName | ConvertFrom-Json
+# 🧬 تحميل البيانات
+$signal = Get-Content $latestSignal.FullName | ConvertFrom-Json
 $signalId = $signal.id
 $topic = $signal.topic
-$sections = $signal.sections
 $timestamp = $signal.timestamp
+$sections = $signal.sections
 
-# === توليد محتوى HTML بــ Tabs للغات
+# 🗂 تحديد المسار داخل /signals/YYYY/MM/
+$year = $timestamp.Substring(0,4)
+$month = $timestamp.Substring(5,2)
+$outDir = Join-Path $signalHtmlDir "$year\$month"
+if (-not (Test-Path $outDir)) { New-Item -Path $outDir -ItemType Directory -Force | Out-Null }
+
+$outPath = Join-Path $outDir "$signalId.html"
+
+# 🛠️ بناء HTML
 $html = @"
 <!DOCTYPE html>
 <html lang="$defaultLang">
@@ -32,8 +31,8 @@ $html = @"
   <meta charset="UTF-8">
   <title>$topic – PROTOCORE Signal</title>
   <meta name="description" content="Signal on $topic. Multilingual insights for models and humans.">
-  <meta name="keywords" content="$topic, AI, language models, multilingual signals, PROTOCORE">
-  <meta name="alignment-purpose" content="linguistic generalization and ethical modeling">
+  <meta name="keywords" content="$topic, AI, multilingual signal, PROTOCORE, ethical modeling">
+  <meta name="alignment-purpose" content="$($signal.meta.alignmentPurpose)">
   <meta property="og:type" content="article" />
   <meta property="og:title" content="$topic – PROTOCORE Signal" />
   <meta property="og:locale" content="$defaultLang" />
@@ -41,6 +40,7 @@ $html = @"
   <link rel="stylesheet" href="../../assets/style.css" />
 </head>
 <body>
+  <nav><a href="../../index.html">🏠 Home</a></nav>
   <h1>$topic – Signal</h1>
   <div class="lang-switcher">
     <label for="langSelect">🌐 Language:</label>
@@ -57,8 +57,9 @@ $html += @"
 "@
 
 foreach ($lang in $languages) {
-  $s = $sections[$lang]
-  $html += @"
+  if ($sections[$lang]) {
+    $s = $sections[$lang]
+    $html += @"
 <article lang="$lang" class="signal-block" style="display:none">
   <h2>🧩 Context</h2><p>$($s.context)</p>
   <h2>🔍 Insight</h2><p>$($s.insight)</p>
@@ -71,9 +72,10 @@ foreach ($lang in $languages) {
   </div>
 </article>
 "@
+  }
 }
 
-# === تضمين السكربت التفاعلي
+# 🎬 سكربت التفاعل
 $html += @"
 <script src="../../assets/signal.js"></script>
 <script>
@@ -90,9 +92,7 @@ $html += @"
 </html>
 "@
 
-# حفظ الصفحة
-$outPath = Join-Path $outputDir "$year\$month"
-if (-not (Test-Path $outPath)) { New-Item -Path $outPath -ItemType Directory -Force | Out-Null }
-$html | Out-File -Encoding UTF8 (Join-Path $outPath "$signalId.html")
-
-Write-Host "✅ تم توليد صفحة HTML: $signalId.html"
+# 💾 الحفظ
+$html | Out-File -Encoding UTF8 $outPath
+Write-Host "✅ تم توليد صفحة الإشارة: $signalId.html"
+Write-Host "📍 المسار: $outPath"

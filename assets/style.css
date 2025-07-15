@@ -1,13 +1,19 @@
 body {
   font-family: system-ui, sans-serif;
-  background: #111;
-  color: #eee;
+  background-color: #0d0d0d;
+  color: #e6e6e6;
   padding: 2rem;
-  line-height: 1.6;
+  line-height: 1.7;
 }
 
 h1, h2 {
+  color: #00ffff;
+}
+
+nav a {
   color: #0ff;
+  text-decoration: none;
+  font-weight: bold;
 }
 
 .lang-switcher {
@@ -22,11 +28,11 @@ select {
 }
 
 .signal-block {
-  margin-bottom: 2rem;
+  background: #1a1a1a;
   border: 1px solid #333;
   padding: 1rem;
-  background: #222;
   border-radius: 6px;
+  margin-bottom: 2rem;
 }
 
 .actions {
@@ -41,4 +47,9 @@ select {
   margin-right: 0.5rem;
   border-radius: 4px;
   cursor: pointer;
+  font-weight: bold;
+}
+
+button:hover {
+  background-color: #003344;
 }

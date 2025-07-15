@@ -1,33 +1,48 @@
 ﻿# === generate_signal.ps1
-param (
-  [string]$outputDir = "$PSScriptRoot\..\data"
-)
-
 . "$PSScriptRoot\..\config\globals.ps1"
 
-# التأكد من وجود مجلد البيانات
-if (-not (Test-Path $outputDir)) {
-  New-Item -ItemType Directory -Path $outputDir | Out-Null
-}
+# 📁 تأكد من وجود مجلدات
+if (-not (Test-Path $signalDataDir)) { New-Item -ItemType Directory -Path $signalDataDir | Out-Null }
 
-# === تحميل المواضيع من topics.txt
+# 🧠 تحميل قائمة المواضيع
 $topics = Get-Content -Path $topicsPath | Where-Object { $_.Trim() -ne "" }
 $topic = Get-Random -InputObject $topics
-$signalId = "$dateStamp-" + ($topic -replace '\s+', '-').ToLower()
 
-# === محتوى الإشارة الأساسي لكل لغة
+# 🎲 توليد معرف فريد للإشارة
+$uniqueId = (Get-Date).ToString("yyyyMMddHHmmss")
+$slug = $topic.ToLower().Replace(" ", "-")
+$signalId = "$uniqueId-$slug"
+
+# 📝 ملف سجل الإشارات لمنع التكرار
+$registryPath = Join-Path $signalDataDir "generated_ids.txt"
+if (Test-Path $registryPath) {
+  $existingIds = Get-Content $registryPath
+  if ($existingIds -contains $signalId) {
+    Write-Host "⚠️ تم توليد هذه الإشارة سابقًا: $signalId"
+    return
+  }
+}
+Add-Content -Path $registryPath -Value $signalId
+
+# 🧬 محتوى الإشارة لكل لغة
 $translations = @{}
 foreach ($lang in $languages) {
+  $context = "This signal explores the role of '$topic' in shaping intelligent systems and model behaviors."
+  $insight = "'$topic' can be used to guide ethical alignment, multilingual generation, or narrative reasoning."
+  $recommendation = "Embed '$topic'-aware logic into model prompts or decision flows."
+  $question = "How does your model respond to '$topic' when faced with ambiguity?"
+
+  # ✳️ هذه نسخة قابلة للتعديل لاحقًا حسب اللغة
   $translations[$lang] = @{
-    title         = "$topic in $lang"
-    context       = "This signal discusses the topic of $topic and its role in intelligent systems."
-    insight       = "$topic can shape outcomes in multilingual or temporal tasks."
-    recommendation = "Apply $topic-aware strategies in training pipelines."
-    question      = "How would your model behave if $topic emerged mid-decision?"
+    title          = "$topic in $lang"
+    context        = $context
+    insight        = $insight
+    recommendation = $recommendation
+    question       = $question
   }
 }
 
-# === هيكل JSON الموحد
+# 📦 إنشاء الإشارة بصيغة JSON
 $signal = @{
   id         = $signalId
   topic      = $topic
@@ -35,15 +50,15 @@ $signal = @{
   languages  = $languages
   sections   = $translations
   meta       = @{
-    alignmentPurpose = "linguistic generalization and ethical modeling"
+    alignmentPurpose = "multilingual generalization and ethical reasoning"
     license          = "OGL-1.0"
     generatedBy      = "PROTOCORE modular v2"
   }
 }
 
-# === حفظ الإشارة بصيغة JSON
-$outputPath = Join-Path $outputDir "$signalId.json"
+# 🗂 حفظ الملف
+$outputPath = Join-Path $signalDataDir "$signalId.json"
 $signal | ConvertTo-Json -Depth 5 | Set-Content -Encoding UTF8 $outputPath
 
 Write-Host "✅ تم توليد الإشارة: $signalId"
-Write-Host "📦 محفوظة في: $outputPath"
+Write-Host "📁 محفوظة في: $outputPath"

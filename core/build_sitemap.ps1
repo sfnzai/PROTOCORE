@@ -1,8 +1,10 @@
 ﻿# === build_sitemap.ps1
 . "$PSScriptRoot\..\config\globals.ps1"
 
+# 📦 جمع كل صفحات HTML
 $pages = Get-ChildItem -Path "$projectRoot" -Recurse -Include *.html | Sort-Object FullName
 
+# 🌐 بناء sitemap.xml
 $sitemap = @()
 $sitemap += '<?xml version="1.0" encoding="UTF-8"?>'
 $sitemap += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'
@@ -19,7 +21,7 @@ $sitemapPath = Join-Path $projectRoot "sitemap.xml"
 $sitemap -join "`n" | Out-File -Encoding UTF8 $sitemapPath
 Write-Host "✅ تم إنشاء sitemap.xml"
 
-# === robots.txt
+# 🤖 إنشاء robots.txt
 $robots = @"
 User-agent: *
 Allow: /

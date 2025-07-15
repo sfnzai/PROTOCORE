@@ -1,3 +1,6 @@
+$scriptRoot = Split-Path -Parent $MyInvocation.MyCommand.Definition
+Set-Location $scriptRoot
+
 . "config/globals.ps1"
 . "core/generate_signal.ps1"
 . "core/build_html.ps1"

@@ -1,13 +1,16 @@
 ﻿# === deploy.ps1
 . "$PSScriptRoot\..\config\globals.ps1"
 
-# تأكد من المسار الصحيح
 Set-Location $projectRoot
 
-# Git خطوات النشر
+# تعديل ملف طفيف لإجبار Git على التحديث
+$dateStamp = Get-Date -Format "yyyy-MM-dd HH:mm"
+"Updated at $dateStamp" | Out-File "$projectRoot\build_log.txt"
+
+# 🚀 Git أوامر النشر
 git add .
-$commitMessage = "🛰️ Auto-deploy PROTOCORE update - $(Get-Date -Format 'yyyy-MM-dd HH:mm')"
+$commitMessage = "🛰️ PROTOCORE auto-deploy — $dateStamp"
 git commit -m "$commitMessage"
 git push origin gh-pages
 
-Write-Host "✅ تم نشر الموقع على GitHub Pages بنجاح"
+Write-Host "✅ تم نشر جميع التحديثات إلى GitHub Pages بنجاح"
