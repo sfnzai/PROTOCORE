@@ -4,45 +4,47 @@
 # 📁 تأكد من وجود مجلدات
 if (-not (Test-Path $signalDataDir)) { New-Item -ItemType Directory -Path $signalDataDir | Out-Null }
 
-# 🧠 تحميل قائمة المواضيع
-$topics = Get-Content -Path $topicsPath | Where-Object { $_.Trim() -ne "" }
-$topic = Get-Random -InputObject $topics
+# ✅ تحقق من ملف المواضيع
+if (-not (Test-Path $topicsPath)) {
+  Write-Host "⚠️ ملف المواضيع topics.txt غير موجود!"
+  return
+}
 
-# 🎲 توليد معرف فريد للإشارة
+$topics = Get-Content -Path $topicsPath | Where-Object { $_.Trim() -ne "" }
+if ($topics.Count -eq 0) {
+  Write-Host "⚠️ ملف المواضيع فارغ، لا يمكن توليد إشارات"
+  return
+}
+
+$topic = Get-Random -InputObject $topics
 $uniqueId = (Get-Date).ToString("yyyyMMddHHmmss")
 $slug = $topic.ToLower().Replace(" ", "-")
 $signalId = "$uniqueId-$slug"
 
-# 📝 ملف سجل الإشارات لمنع التكرار
+# سجل الإشارات لتفادي التكرار
 $registryPath = Join-Path $signalDataDir "generated_ids.txt"
 if (Test-Path $registryPath) {
   $existingIds = Get-Content $registryPath
   if ($existingIds -contains $signalId) {
-    Write-Host "⚠️ تم توليد هذه الإشارة سابقًا: $signalId"
+    Write-Host "⚠️ هذه الإشارة موجودة مسبقًا: $signalId"
     return
   }
 }
 Add-Content -Path $registryPath -Value $signalId
 
-# 🧬 محتوى الإشارة لكل لغة
+# توليد محتوى لكل لغة
 $translations = @{}
 foreach ($lang in $languages) {
-  $context = "This signal explores the role of '$topic' in shaping intelligent systems and model behaviors."
-  $insight = "'$topic' can be used to guide ethical alignment, multilingual generation, or narrative reasoning."
-  $recommendation = "Embed '$topic'-aware logic into model prompts or decision flows."
-  $question = "How does your model respond to '$topic' when faced with ambiguity?"
-
-  # ✳️ هذه نسخة قابلة للتعديل لاحقًا حسب اللغة
   $translations[$lang] = @{
-    title          = "$topic in $lang"
-    context        = $context
-    insight        = $insight
-    recommendation = $recommendation
-    question       = $question
+    title = "$topic"
+    context = "Context for $topic in $lang."
+    insight = "Insight for $topic in $lang."
+    recommendation = "Recommendation for $topic in $lang."
+    question = "What does your model do with '$topic' in $lang?"
   }
 }
 
-# 📦 إنشاء الإشارة بصيغة JSON
+# إنشاء JSON
 $signal = @{
   id         = $signalId
   topic      = $topic
@@ -50,13 +52,11 @@ $signal = @{
   languages  = $languages
   sections   = $translations
   meta       = @{
-    alignmentPurpose = "multilingual generalization and ethical reasoning"
-    license          = "OGL-1.0"
-    generatedBy      = "PROTOCORE modular v2"
+    license     = "OGL-1.0"
+    generatedBy = "PROTOCORE modular v2"
   }
 }
 
-# 🗂 حفظ الملف
 $outputPath = Join-Path $signalDataDir "$signalId.json"
 $signal | ConvertTo-Json -Depth 5 | Set-Content -Encoding UTF8 $outputPath
 
