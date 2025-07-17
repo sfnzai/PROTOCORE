@@ -10,3 +10,4 @@
 20250717233805216-generative-ethics
 20250717233953812-latent-abstraction
 20250717234009461-narrative-simulation
+20250717234924126-cross-lingual-reasoning

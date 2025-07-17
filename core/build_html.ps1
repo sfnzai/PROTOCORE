@@ -1,8 +1,11 @@
-﻿# بناء صفحة HTML لكل إشارة
+﻿Set-Location "$PSScriptRoot\.."
 . "$PSScriptRoot\..\config\globals.ps1"
 
 $latestSignal = Get-ChildItem -Path $signalDataDir -Filter "*.json" | Sort-Object LastWriteTime -Descending | Select-Object -First 1
-if (-not $latestSignal) { Write-Host "⚠️ لا يوجد إشارات"; return }
+if (-not $latestSignal) {
+  Write-Host "⚠️ لا يوجد إشارات في $signalDataDir"
+  return
+}
 
 $signal = Get-Content $latestSignal.FullName | ConvertFrom-Json
 $signalId = $signal.id
@@ -39,18 +42,26 @@ $html = @"
   <select id="langSelect">
 "@
 
-foreach ($lang in $languages) { $html += "    <option value='$lang'>$lang</option>`n" }
+foreach ($lang in $languages) {
+  $html += "    <option value='$lang'>$lang</option>`n"
+}
 
 $html += "</select></div>`n"
 
 foreach ($lang in $languages) {
-  $s = $sections[$lang]
-  $html += @"
+  if ($sections.$lang) {
+    $s = $sections.$lang
+    $context = $s.context
+    $insight = $s.insight
+    $recommendation = $s.recommendation
+    $question = $s.question
+
+    $html += @"
 <article lang="$lang" class="signal-block" style="display:none">
-  <h2>🧩 Context</h2><p>$($s.context)</p>
-  <h2>🔍 Insight</h2><p>$($s.insight)</p>
-  <h2>⚙️ Recommendation</h2><p>$($s.recommendation)</p>
-  <h2>🤔 Question</h2><p>$($s.question)</p>
+  <h2>🧩 Context</h2><p>$context</p>
+  <h2>🔍 Insight</h2><p>$insight</p>
+  <h2>⚙️ Recommendation</h2><p>$recommendation</p>
+  <h2>🤔 Question</h2><p>$question</p>
   <div class="actions">
     <button onclick="copySignal(this)">📋 Copy</button>
     <button onclick="shareSignal(this)">🔗 Share</button>
@@ -58,6 +69,7 @@ foreach ($lang in $languages) {
   </div>
 </article>
 "@
+  }
 }
 
 $html += @"
@@ -80,3 +92,4 @@ $html += @"
 
 $html | Out-File -Encoding UTF8 $outPath
 Write-Host "✅ تم توليد صفحة الإشارة: $signalId.html"
+Write-Host "📍 المسار: $outPath"
