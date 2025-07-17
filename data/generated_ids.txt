@@ -13,3 +13,4 @@
 20250717234924126-cross-lingual-reasoning
 20250717235824951-narrative-simulation
 20250718000318688-multimodal-fusion
+20250718001037285-model-introspection
