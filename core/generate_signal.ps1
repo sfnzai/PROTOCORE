@@ -31,7 +31,8 @@ if ($topics.Count -eq 0) {
 Write-Host "✅ عدد المواضيع: $($topics.Count)"
 
 # 🧠 توليد موضوع غير مكرر
-$topic = Get-Random -InputObject $topics
+$topic = "$(Get-Random -InputObject $topics)"
+
 $uniqueId = (Get-Date).ToString("yyyyMMddHHmmssfff")  # ← ميلي ثانية لضمان التفرّد
 $slug = $topic.ToLower().Replace(" ", "-")
 $signalId = "$uniqueId-$slug"
