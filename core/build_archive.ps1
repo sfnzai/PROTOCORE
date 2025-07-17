@@ -1,50 +1,62 @@
-﻿# === build_archive.ps1
+﻿# بناء صفحة أرشيف الإشارات
 . "$PSScriptRoot\..\config\globals.ps1"
 
 $pages = Get-ChildItem -Path $signalHtmlDir -Recurse -Filter "*.html" | Sort-Object LastWriteTime -Descending
-$archive = @{}
+$signalMap = @{}
 
 foreach ($file in $pages) {
-  $rel = $file.FullName.Replace($signalHtmlDir, "").Replace("\", "/").TrimStart("/")
-  $parts = $rel -split "/"
+  $relPath = $file.FullName.Replace($signalHtmlDir, "").Replace("\", "/").TrimStart("/")
+  $parts = $relPath -split "/"
   $year = $parts[0]
   $month = $parts[1]
   $filename = $parts[-1]
   $id = $filename.Replace(".html", "")
-  
-  if (-not $archive.ContainsKey($year)) { $archive[$year] = @{} }
-  if (-not $archive[$year].ContainsKey($month)) { $archive[$year][$month] = @{} }
-  $archive[$year][$month][$id] = "$baseUrl/signals/$rel"
+  $url = "$baseUrl/signals/$relPath"
+
+  if (-not $signalMap.ContainsKey($year)) { $signalMap[$year] = @{} }
+  if (-not $signalMap[$year].ContainsKey($month)) { $signalMap[$year][$month] = @{} }
+  $signalMap[$year][$month][$id] = $url
 }
 
-# ✅ بناء HTML بطريقة صحيحة
 $indexHtml = @"
 <!DOCTYPE html>
 <html lang="$defaultLang">
 <head>
   <meta charset="UTF-8">
-  <title>PROTOCORE Signal Archive</title>
-  <meta name="description" content="Multilingual signals organized by date">
-  <link rel="stylesheet" href="assets/style.css">
+  <title>PROTOCORE Archive</title>
+  <meta name="description" content="Multilingual signal archive organized by date">
+  <link rel="stylesheet" href="assets/style.css" />
 </head>
 <body>
-  <h1>📡 Signal Archive</h1>
+<nav>
+  <a href="about.html">📘 About</a> |
+  <a href="signal-format.html">🧬 Format</a> |
+  <a href="privacy.html">🔒 Privacy</a> |
+  <a href="license.html">🛡 License</a> |
+  <a href="support.html">🤝 Support</a>
+</nav>
+<h1>📡 PROTOCORE Signal Archive</h1>
 "@
 
-foreach ($year in $archive.Keys | Sort-Object -Descending) {
-  foreach ($month in $archive[$year].Keys | Sort-Object -Descending) {
+foreach ($year in $signalMap.Keys | Sort-Object -Descending) {
+  foreach ($month in $signalMap[$year].Keys | Sort-Object -Descending) {
     $indexHtml += "<h2>🗓️ $year/$month</h2><ul>`n"
-    foreach ($id in $archive[$year][$month].Keys | Sort-Object -Descending) {
-      $url = $archive[$year][$month][$id]
-      $indexHtml += "  <li><a href='$url'>$id</a></li>`n"
+    foreach ($id in $signalMap[$year][$month].Keys | Sort-Object -Descending) {
+      $link = $signalMap[$year][$month][$id]
+      $indexHtml += "  <li><a href='$link'>$id</a></li>`n"
     }
     $indexHtml += "</ul>`n"
   }
 }
 
-$indexHtml += "</body></html>"
+$indexHtml += @"
+<footer>
+  <p>PROTOCORE Final © – Structured signal index for ethical modeling.</p>
+</footer>
+</body>
+</html>
+"@
 
-# 💾 حفظ الصفحة
 $indexPath = Join-Path $projectRoot "index.html"
 $indexHtml | Out-File -Encoding UTF8 $indexPath
-Write-Host "✅ أرشيف الإشارات جاهز: index.html"
+Write-Host "✅ تم إنشاء صفحة الأرشيف: index.html"

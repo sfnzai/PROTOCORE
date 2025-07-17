@@ -3,3 +3,8 @@ Multimodal fusion
 Ethical scaffolding
 Narrative simulation
 Signal alignment
+Latent abstraction
+Prompt integrity
+Model introspection
+Generative ethics
+Cross-lingual reasoning

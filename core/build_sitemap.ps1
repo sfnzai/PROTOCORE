@@ -1,8 +1,8 @@
-﻿# === build_sitemap.ps1
+﻿# === PROTOCORE FINAL / build_sitemap.ps1
 . "$PSScriptRoot\..\config\globals.ps1"
 
-# 📦 جمع كل صفحات HTML
-$pages = Get-ChildItem -Path "$projectRoot" -Recurse -Include *.html | Sort-Object FullName
+# 🗂️ جمع كل صفحات HTML
+$pages = Get-ChildItem -Path $projectRoot -Recurse -Include *.html | Sort-Object FullName
 
 # 🌐 بناء sitemap.xml
 $sitemap = @()
