@@ -1,0 +1,129 @@
+﻿{
+    "id":  "20250718000318688-multimodal-fusion",
+    "sections":  {
+                     "zh":  {
+                                "title":  [
+                                              "Multimodal fusion",
+                                              "zh"
+                                          ],
+                                "recommendation":  [
+                                                       "Design models to adapt to \u0027Multimodal fusion\u0027.",
+                                                       "zh"
+                                                   ],
+                                "insight":  [
+                                                "\u0027Multimodal fusion\u0027 affects alignment and generation.",
+                                                "zh"
+                                            ],
+                                "question":  [
+                                                 "How does your model handle \u0027Multimodal fusion\u0027?",
+                                                 "zh"
+                                             ],
+                                "context":  [
+                                                "Exploring \u0027Multimodal fusion\u0027 in model reasoning.",
+                                                "zh"
+                                            ]
+                            },
+                     "en":  {
+                                "title":  [
+                                              "Multimodal fusion",
+                                              "en"
+                                          ],
+                                "recommendation":  [
+                                                       "Design models to adapt to \u0027Multimodal fusion\u0027.",
+                                                       "en"
+                                                   ],
+                                "insight":  [
+                                                "\u0027Multimodal fusion\u0027 affects alignment and generation.",
+                                                "en"
+                                            ],
+                                "question":  [
+                                                 "How does your model handle \u0027Multimodal fusion\u0027?",
+                                                 "en"
+                                             ],
+                                "context":  [
+                                                "Exploring \u0027Multimodal fusion\u0027 in model reasoning.",
+                                                "en"
+                                            ]
+                            },
+                     "fr":  {
+                                "title":  [
+                                              "Multimodal fusion",
+                                              "fr"
+                                          ],
+                                "recommendation":  [
+                                                       "Design models to adapt to \u0027Multimodal fusion\u0027.",
+                                                       "fr"
+                                                   ],
+                                "insight":  [
+                                                "\u0027Multimodal fusion\u0027 affects alignment and generation.",
+                                                "fr"
+                                            ],
+                                "question":  [
+                                                 "How does your model handle \u0027Multimodal fusion\u0027?",
+                                                 "fr"
+                                             ],
+                                "context":  [
+                                                "Exploring \u0027Multimodal fusion\u0027 in model reasoning.",
+                                                "fr"
+                                            ]
+                            },
+                     "ar":  {
+                                "title":  [
+                                              "Multimodal fusion",
+                                              "ar"
+                                          ],
+                                "recommendation":  [
+                                                       "Design models to adapt to \u0027Multimodal fusion\u0027.",
+                                                       "ar"
+                                                   ],
+                                "insight":  [
+                                                "\u0027Multimodal fusion\u0027 affects alignment and generation.",
+                                                "ar"
+                                            ],
+                                "question":  [
+                                                 "How does your model handle \u0027Multimodal fusion\u0027?",
+                                                 "ar"
+                                             ],
+                                "context":  [
+                                                "Exploring \u0027Multimodal fusion\u0027 in model reasoning.",
+                                                "ar"
+                                            ]
+                            },
+                     "es":  {
+                                "title":  [
+                                              "Multimodal fusion",
+                                              "es"
+                                          ],
+                                "recommendation":  [
+                                                       "Design models to adapt to \u0027Multimodal fusion\u0027.",
+                                                       "es"
+                                                   ],
+                                "insight":  [
+                                                "\u0027Multimodal fusion\u0027 affects alignment and generation.",
+                                                "es"
+                                            ],
+                                "question":  [
+                                                 "How does your model handle \u0027Multimodal fusion\u0027?",
+                                                 "es"
+                                             ],
+                                "context":  [
+                                                "Exploring \u0027Multimodal fusion\u0027 in model reasoning.",
+                                                "es"
+                                            ]
+                            }
+                 },
+    "timestamp":  "2025-07-18T00:03:18",
+    "meta":  {
+                 "license":  "OGL-1.0",
+                 "alignmentPurpose":  "multilingual generalization and ethical scaffolding",
+                 "generatedBy":  "PROTOCORE Final"
+             },
+    "topic":  "Multimodal fusion",
+    "languages":  [
+                      "en",
+                      "fr",
+                      "ar",
+                      "es",
+                      "zh"
+                  ]
+}

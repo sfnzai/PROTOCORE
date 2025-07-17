@@ -8,8 +8,8 @@ if (-not $latestSignal) {
 }
 
 $signal = Get-Content $latestSignal.FullName | ConvertFrom-Json
-$signalId = $signal.id
-$topic = $signal.topic
+$signalId = "$($signal.id)"
+$topic = "$($signal.topic)"
 $timestamp = $signal.timestamp
 $sections = $signal.sections
 
@@ -27,14 +27,14 @@ $html = @"
   <title>$topic – PROTOCORE Signal</title>
   <meta name="description" content="Signal for $topic.">
   <link rel="canonical" href="$baseUrl/signals/$year/$month/$signalId.html" />
-  <link rel="stylesheet" href="../../assets/style.css" />
+  <link rel="stylesheet" href="$baseUrl/assets/style.css" />
 </head>
 <body>
 <nav>
-  <a href="../../index.html">🏠 Archive</a> |
-  <a href="../../about.html">📘 About</a> |
-  <a href="../../license.html">🛡 License</a> |
-  <a href="../../support.html">🤝 Support</a>
+  <a href="$baseUrl/index.html">🏠 Archive</a> |
+  <a href="$baseUrl/about.html">📘 About</a> |
+  <a href="$baseUrl/license.html">🛡 License</a> |
+  <a href="$baseUrl/support.html">🤝 Support</a>
 </nav>
 <h1>$topic – Signal</h1>
 <div class="lang-switcher">
@@ -51,10 +51,10 @@ $html += "</select></div>`n"
 foreach ($lang in $languages) {
   if ($sections.$lang) {
     $s = $sections.$lang
-    $context = $s.context
-    $insight = $s.insight
-    $recommendation = $s.recommendation
-    $question = $s.question
+    $context = "$($s.context)"
+    $insight = "$($s.insight)"
+    $recommendation = "$($s.recommendation)"
+    $question = "$($s.question)"
 
     $html += @"
 <article lang="$lang" class="signal-block" style="display:none">
@@ -73,7 +73,7 @@ foreach ($lang in $languages) {
 }
 
 $html += @"
-<script src="../../assets/signal.js"></script>
+<script src="$baseUrl/assets/signal.js"></script>
 <script>
   const select = document.getElementById("langSelect")
   const blocks = document.querySelectorAll(".signal-block")
