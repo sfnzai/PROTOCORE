@@ -56,8 +56,12 @@ foreach ($lang in $languages) {
     $recommendation = "$($s.recommendation)"
     $question = "$($s.question)"
 
-    $html += @"
-<article lang="$lang" class="signal-block" style="display:none">
+  
+  $display = "none"
+if ($lang -eq $defaultLang) { $display = "block" }
+
+$html += @"
+<article lang="$lang" class="signal-block" style="display:$display">
   <h2>🧩 Context</h2><p>$context</p>
   <h2>🔍 Insight</h2><p>$insight</p>
   <h2>⚙️ Recommendation</h2><p>$recommendation</p>
@@ -69,6 +73,8 @@ foreach ($lang in $languages) {
   </div>
 </article>
 "@
+
+
   }
 }
 
@@ -82,8 +88,18 @@ $html += @"
     const chosen = document.querySelector(`.signal-block[lang='${this.value}']`)
     if (chosen) { chosen.style.display = "block" }
   })
-  select.value = "$defaultLang"
-  select.dispatchEvent(new Event("change"))
+ window.addEventListener("DOMContentLoaded", () => {
+ 
+ window.addEventListener("DOMContentLoaded", () => {
+  select.value = "$defaultLang";
+  select.dispatchEvent(new Event("change"));
+});
+
+
+
+
+
+});
 </script>
 <footer><p>License: OGL-1.0 – PROTOCORE Final</p></footer>
 </body>
