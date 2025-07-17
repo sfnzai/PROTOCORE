@@ -1,4 +1,5 @@
 ﻿# === PROTOCORE FINAL / build_static_pages.ps1
+Set-Location "$PSScriptRoot\.."
 . "$PSScriptRoot\..\config\globals.ps1"
 
 $pages = @{

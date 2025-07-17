@@ -1,4 +1,5 @@
 ﻿# === PROTOCORE FINAL / build_sitemap.ps1
+Set-Location "$PSScriptRoot\.."
 . "$PSScriptRoot\..\config\globals.ps1"
 
 # 🗂️ جمع كل صفحات HTML

@@ -1,11 +1,13 @@
 ﻿# === PROTOCORE FINAL / globals.ps1
 
-# 🧭 الجذر الحقيقي للمشروع (يجب أن يكون داخل الريبو مباشرة)
-$projectRoot = Split-Path -Parent $MyInvocation.MyCommand.Definition
+# 🧭 استخدم القيمة التي تم تمريرها من run.ps1
+if (-not $global:projectRoot) {
+  throw "❌ projectRoot لم يتم تمريره من run.ps1"
+}
 
 # 📁 مجلدات البيانات والإشارات
-$signalDataDir = "$projectRoot\data"
-$signalHtmlDir = "$projectRoot\signals"
+$signalDataDir = "$global:projectRoot\data"
+$signalHtmlDir = "$global:projectRoot\signals"
 
 # 🌍 إعدادات عامة
 $baseUrl = "https://sfnzai.github.io/PROTOCORE"
@@ -13,4 +15,4 @@ $defaultLang = "en"
 $languages = @("en", "fr", "ar", "es", "zh")
 
 # 📘 ملف المواضيع
-$topicsPath = "$projectRoot\topics.txt"
+$topicsPath = "$global:projectRoot\topics.txt"
