@@ -3,7 +3,7 @@
 
 $latestSignal = Get-ChildItem -Path $signalDataDir -Filter "*.json" | Sort-Object LastWriteTime -Descending | Select-Object -First 1
 if (-not $latestSignal) {
-  Write-Host "⚠️ لا يوجد إشارات في $signalDataDir"
+  Write-Host "⚠️ لا يوجد إشارات"
   return
 }
 
@@ -25,8 +25,6 @@ $html = @"
 <head>
   <meta charset="UTF-8">
   <title>$topic – PROTOCORE Signal</title>
-  <meta name="description" content="Signal for $topic.">
-  <link rel="canonical" href="$baseUrl/signals/$year/$month/$signalId.html" />
   <link rel="stylesheet" href="$baseUrl/assets/style.css" />
 </head>
 <body>
@@ -55,12 +53,9 @@ foreach ($lang in $languages) {
     $insight = "$($s.insight)"
     $recommendation = "$($s.recommendation)"
     $question = "$($s.question)"
+    $display = ($lang -eq $defaultLang) ? "block" : "none"
 
-  
-  $display = "none"
-if ($lang -eq $defaultLang) { $display = "block" }
-
-$html += @"
+    $html += @"
 <article lang="$lang" class="signal-block" style="display:$display">
   <h2>🧩 Context</h2><p>$context</p>
   <h2>🔍 Insight</h2><p>$insight</p>
@@ -73,32 +68,20 @@ $html += @"
   </div>
 </article>
 "@
-
-
   }
 }
 
 $html += @"
 <script src="$baseUrl/assets/signal.js"></script>
 <script>
-  const select = document.getElementById("langSelect")
-  const blocks = document.querySelectorAll(".signal-block")
+window.addEventListener("DOMContentLoaded", () => {
+  const select = document.getElementById("langSelect");
+  const blocks = document.querySelectorAll(".signal-block");
   select.addEventListener("change", function () {
-    blocks.forEach(b => b.style.display = "none")
-    const chosen = document.querySelector(`.signal-block[lang='${this.value}']`)
-    if (chosen) { chosen.style.display = "block" }
-  })
- window.addEventListener("DOMContentLoaded", () => {
- 
- window.addEventListener("DOMContentLoaded", () => {
-  select.value = "$defaultLang";
-  select.dispatchEvent(new Event("change"));
-});
-
-
-
-
-
+    blocks.forEach(b => b.style.display = "none");
+    const chosen = document.querySelector(`.signal-block[lang='${this.value}']`);
+    if (chosen) { chosen.style.display = "block"; }
+  });
 });
 </script>
 <footer><p>License: OGL-1.0 – PROTOCORE Final</p></footer>

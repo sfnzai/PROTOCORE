@@ -1,18 +1,7 @@
-﻿# === PROTOCORE FINAL / generate_signal.ps1
-Set-Location "$PSScriptRoot\.."
+﻿Set-Location "$PSScriptRoot\.."
 . "$PSScriptRoot\..\config\globals.ps1"
 
-# 🧱 إنشاء المجلدات المطلوبة
 New-Item -ItemType Directory -Path $signalDataDir -Force | Out-Null
-
-# ✅ تحقق من وجود ملف المواضيع
-Write-Host "🔍 projectRoot = $global:projectRoot"
-Write-Host "🔍 topicsPath = $topicsPath"
-
-if (-not (Test-Path $topicsPath)) {
-  Write-Host "❌ ملف المواضيع غير موجود"
-  return
-}
 
 $topics = Get-Content $topicsPath | Where-Object { $_.Trim() -ne "" }
 if ($topics.Count -eq 0) {
@@ -20,9 +9,6 @@ if ($topics.Count -eq 0) {
   return
 }
 
-Write-Host "✅ عدد المواضيع: $($topics.Count)"
-
-# 🧠 توليد موضوع غير مكرر
 $topic = "$(Get-Random -InputObject $topics)"
 Write-Host "🧠 الموضوع المختار: $topic"
 
@@ -30,7 +16,6 @@ $uniqueId = (Get-Date).ToString("yyyyMMddHHmmssfff")
 $slug = $topic.ToLower().Replace(" ", "-")
 $signalId = "$uniqueId-$slug"
 
-# 📜 منع التكرار باستخدام سجل
 $registryPath = Join-Path $signalDataDir "generated_ids.txt"
 if (Test-Path $registryPath) {
   $existingIds = Get-Content $registryPath
@@ -41,7 +26,6 @@ if (Test-Path $registryPath) {
 }
 Add-Content -Path $registryPath -Value $signalId
 
-# 🌐 دالة الترجمة
 function Translate($text, $lang) {
   if (-not $text) { return "[No content]" }
   switch ($lang) {
@@ -54,18 +38,11 @@ function Translate($text, $lang) {
   }
 }
 
-# 🧩 محتوى الإشارة
 $contextText = "Exploring '$topic' in model reasoning."
 $insightText = "'$topic' affects alignment and generation."
 $recommendationText = "Design models to adapt to '$topic'."
 $questionText = "How does your model handle '$topic'?"
 
-Write-Host "🧩 Context: $contextText"
-Write-Host "🔍 Insight: $insightText"
-Write-Host "⚙️ Recommendation: $recommendationText"
-Write-Host "🤔 Question: $questionText"
-
-# 🌐 توليد ترجمات
 $translations = @{}
 foreach ($lang in $languages) {
   $translations[$lang] = @{
@@ -77,7 +54,6 @@ foreach ($lang in $languages) {
   }
 }
 
-# 📦 بناء الإشارة
 $signal = @{
   id = $signalId
   topic = $topic
@@ -91,7 +67,6 @@ $signal = @{
   }
 }
 
-# 💾 حفظ الإشارة
 $outputPath = Join-Path $signalDataDir "$signalId.json"
 $signal | ConvertTo-Json -Depth 5 | Set-Content -Encoding UTF8 $outputPath
 
