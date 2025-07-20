@@ -48,7 +48,10 @@ $html += "</select></div>`n"
 
 foreach ($lang in $languages) {
   if ($sections.$lang) {
-    $s = $sections.$lang | ConvertTo-Json -Depth 2 | ConvertFrom-Json
+   
+   $jsonText = $sections[$lang] | ConvertTo-Json -Depth 2
+$s = $jsonText | ConvertFrom-Json
+
   $context = $s.context[0]
 $insight = $s.insight[0]
 $recommendation = $s.recommendation[0]
