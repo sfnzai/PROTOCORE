@@ -20,3 +20,4 @@
 20250718010514564-prompt-integrity
 20250718010737747-contextual-anchoring
 20250720221307539-model-introspection
+20250720221439830-narrative-simulation
