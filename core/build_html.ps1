@@ -53,7 +53,12 @@ foreach ($lang in $languages) {
     $insight = "$($s.insight)"
     $recommendation = "$($s.recommendation)"
     $question = "$($s.question)"
-    $display = ($lang -eq $defaultLang) ? "block" : "none"
+    
+    if ($lang -eq $defaultLang) {
+      $display = "block"
+    } else {
+      $display = "none"
+    }
 
     $html += @"
 <article lang="$lang" class="signal-block" style="display:$display">
