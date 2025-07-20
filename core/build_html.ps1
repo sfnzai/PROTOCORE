@@ -79,15 +79,25 @@ foreach ($lang in $languages) {
 $html += @"
 <script src="$baseUrl/assets/signal.js"></script>
 <script>
+
+
 window.addEventListener("DOMContentLoaded", () => {
   const select = document.getElementById("langSelect");
   const blocks = document.querySelectorAll(".signal-block");
-  select.addEventListener("change", function () {
+
+  function updateLanguage(lang) {
     blocks.forEach(b => b.style.display = "none");
-    const chosen = document.querySelector(`.signal-block[lang='${this.value}']`);
+    const chosen = document.querySelector(`.signal-block[lang='${lang}']`);
     if (chosen) { chosen.style.display = "block"; }
+  }
+
+  select.addEventListener("change", function () {
+    updateLanguage(this.value);
   });
+
+  updateLanguage(select.value); // ← تفعل اللغة عند التحميل
 });
+
 </script>
 <footer><p>License: OGL-1.0 – PROTOCORE Final</p></footer>
 </body>
