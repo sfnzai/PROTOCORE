@@ -49,10 +49,10 @@ $html += "</select></div>`n"
 foreach ($lang in $languages) {
   if ($sections.$lang) {
     $s = $sections.$lang | ConvertTo-Json -Depth 2 | ConvertFrom-Json
-    $context = "$($s.context)"
-    $insight = "$($s.insight)"
-    $recommendation = "$($s.recommendation)"
-    $question = "$($s.question)"
+   $context = "$($s.context[0])"
+$insight = "$($s.insight[0])"
+$recommendation = "$($s.recommendation[0])"
+$question = "$($s.question[0])"
     
     if ($lang -eq $defaultLang) {
       $display = "block"

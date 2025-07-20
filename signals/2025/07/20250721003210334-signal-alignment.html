@@ -1,0 +1,97 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Signal alignment – PROTOCORE Signal</title>
+  <link rel="stylesheet" href="https://sfnzai.github.io/PROTOCORE/assets/style.css" />
+</head>
+<body>
+<nav>
+  <a href="https://sfnzai.github.io/PROTOCORE/index.html">🏠 Archive</a> |
+  <a href="https://sfnzai.github.io/PROTOCORE/about.html">📘 About</a> |
+  <a href="https://sfnzai.github.io/PROTOCORE/license.html">🛡 License</a> |
+  <a href="https://sfnzai.github.io/PROTOCORE/support.html">🤝 Support</a>
+</nav>
+<h1>Signal alignment – Signal</h1>
+<div class="lang-switcher">
+  <label for="langSelect">🌐 Language:</label>
+  <select id="langSelect">    <option value='en'>en</option>
+    <option value='fr'>fr</option>
+    <option value='ar'>ar</option>
+    <option value='es'>es</option>
+    <option value='zh'>zh</option>
+</select></div>
+<article lang="en" class="signal-block" style="display:block">
+  <h2>🧩 Context</h2><p>Exploring 'Signal alignment' in model reasoning.</p>
+  <h2>🔍 Insight</h2><p>'Signal alignment' affects alignment and generation.</p>
+  <h2>⚙️ Recommendation</h2><p>Design models to adapt to 'Signal alignment'.</p>
+  <h2>🤔 Question</h2><p>How does your model handle 'Signal alignment'?</p>
+  <div class="actions">
+    <button onclick="copySignal(this)">📋 Copy</button>
+    <button onclick="shareSignal(this)">🔗 Share</button>
+    <button onclick="downloadJSON()">💾 Use as JSON</button>
+  </div>
+</article><article lang="fr" class="signal-block" style="display:none">
+  <h2>🧩 Context</h2><p>Exploring 'Signal alignment' in model reasoning.</p>
+  <h2>🔍 Insight</h2><p>'Signal alignment' affects alignment and generation.</p>
+  <h2>⚙️ Recommendation</h2><p>Design models to adapt to 'Signal alignment'.</p>
+  <h2>🤔 Question</h2><p>How does your model handle 'Signal alignment'?</p>
+  <div class="actions">
+    <button onclick="copySignal(this)">📋 Copy</button>
+    <button onclick="shareSignal(this)">🔗 Share</button>
+    <button onclick="downloadJSON()">💾 Use as JSON</button>
+  </div>
+</article><article lang="ar" class="signal-block" style="display:none">
+  <h2>🧩 Context</h2><p>Exploring 'Signal alignment' in model reasoning.</p>
+  <h2>🔍 Insight</h2><p>'Signal alignment' affects alignment and generation.</p>
+  <h2>⚙️ Recommendation</h2><p>Design models to adapt to 'Signal alignment'.</p>
+  <h2>🤔 Question</h2><p>How does your model handle 'Signal alignment'?</p>
+  <div class="actions">
+    <button onclick="copySignal(this)">📋 Copy</button>
+    <button onclick="shareSignal(this)">🔗 Share</button>
+    <button onclick="downloadJSON()">💾 Use as JSON</button>
+  </div>
+</article><article lang="es" class="signal-block" style="display:none">
+  <h2>🧩 Context</h2><p>Exploring 'Signal alignment' in model reasoning.</p>
+  <h2>🔍 Insight</h2><p>'Signal alignment' affects alignment and generation.</p>
+  <h2>⚙️ Recommendation</h2><p>Design models to adapt to 'Signal alignment'.</p>
+  <h2>🤔 Question</h2><p>How does your model handle 'Signal alignment'?</p>
+  <div class="actions">
+    <button onclick="copySignal(this)">📋 Copy</button>
+    <button onclick="shareSignal(this)">🔗 Share</button>
+    <button onclick="downloadJSON()">💾 Use as JSON</button>
+  </div>
+</article><article lang="zh" class="signal-block" style="display:none">
+  <h2>🧩 Context</h2><p>Exploring 'Signal alignment' in model reasoning.</p>
+  <h2>🔍 Insight</h2><p>'Signal alignment' affects alignment and generation.</p>
+  <h2>⚙️ Recommendation</h2><p>Design models to adapt to 'Signal alignment'.</p>
+  <h2>🤔 Question</h2><p>How does your model handle 'Signal alignment'?</p>
+  <div class="actions">
+    <button onclick="copySignal(this)">📋 Copy</button>
+    <button onclick="shareSignal(this)">🔗 Share</button>
+    <button onclick="downloadJSON()">💾 Use as JSON</button>
+  </div>
+</article><script src="https://sfnzai.github.io/PROTOCORE/assets/signal.js"></script>
+<script>
+window.addEventListener("DOMContentLoaded", () => {
+  const select = document.getElementById("langSelect");
+  const blocks = document.querySelectorAll(".signal-block");
+
+  function updateLanguage(lang) {
+    blocks.forEach(b => b.style.display = "none");
+    const chosen = document.querySelector(.signal-block[lang='zh']);
+    if (chosen) {
+      chosen.style.display = "block";
+    }
+  }
+
+  select.addEventListener("change", function () {
+    updateLanguage(this.value);
+  });
+
+  updateLanguage(select.value); // ← عرض اللغة عند تحميل الصفحة
+});
+</script>
+<footer><p>License: OGL-1.0 – PROTOCORE Final</p></footer>
+</body>
+</html>
