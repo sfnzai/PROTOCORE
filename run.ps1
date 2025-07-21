@@ -8,7 +8,7 @@ $projectRoot = Split-Path -Parent $MyInvocation.MyCommand.Definition
 $global:projectRoot = $projectRoot
 
 . "$projectRoot\core\generate_signal.ps1"
-. "$projectRoot\core\build_html.ps1"
+. "$projectRoot\core\build_html_per_language.ps1"
 . "$projectRoot\core\build_archive.ps1"
 . "$projectRoot\core\build_static_pages.ps1"
 . "$projectRoot\core\build_sitemap.ps1"
