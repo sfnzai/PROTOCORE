@@ -1,0 +1,129 @@
+﻿{
+    "id":  "20250721211838297-latent-abstraction",
+    "sections":  {
+                     "zh":  {
+                                "title":  [
+                                              "Latent abstraction",
+                                              "zh"
+                                          ],
+                                "recommendation":  [
+                                                       "Design models to adapt to \u0027Latent abstraction\u0027.",
+                                                       "zh"
+                                                   ],
+                                "insight":  [
+                                                "\u0027Latent abstraction\u0027 affects alignment and generation.",
+                                                "zh"
+                                            ],
+                                "question":  [
+                                                 "How does your model handle \u0027Latent abstraction\u0027?",
+                                                 "zh"
+                                             ],
+                                "context":  [
+                                                "Exploring \u0027Latent abstraction\u0027 in model reasoning.",
+                                                "zh"
+                                            ]
+                            },
+                     "en":  {
+                                "title":  [
+                                              "Latent abstraction",
+                                              "en"
+                                          ],
+                                "recommendation":  [
+                                                       "Design models to adapt to \u0027Latent abstraction\u0027.",
+                                                       "en"
+                                                   ],
+                                "insight":  [
+                                                "\u0027Latent abstraction\u0027 affects alignment and generation.",
+                                                "en"
+                                            ],
+                                "question":  [
+                                                 "How does your model handle \u0027Latent abstraction\u0027?",
+                                                 "en"
+                                             ],
+                                "context":  [
+                                                "Exploring \u0027Latent abstraction\u0027 in model reasoning.",
+                                                "en"
+                                            ]
+                            },
+                     "fr":  {
+                                "title":  [
+                                              "Latent abstraction",
+                                              "fr"
+                                          ],
+                                "recommendation":  [
+                                                       "Design models to adapt to \u0027Latent abstraction\u0027.",
+                                                       "fr"
+                                                   ],
+                                "insight":  [
+                                                "\u0027Latent abstraction\u0027 affects alignment and generation.",
+                                                "fr"
+                                            ],
+                                "question":  [
+                                                 "How does your model handle \u0027Latent abstraction\u0027?",
+                                                 "fr"
+                                             ],
+                                "context":  [
+                                                "Exploring \u0027Latent abstraction\u0027 in model reasoning.",
+                                                "fr"
+                                            ]
+                            },
+                     "ar":  {
+                                "title":  [
+                                              "Latent abstraction",
+                                              "ar"
+                                          ],
+                                "recommendation":  [
+                                                       "Design models to adapt to \u0027Latent abstraction\u0027.",
+                                                       "ar"
+                                                   ],
+                                "insight":  [
+                                                "\u0027Latent abstraction\u0027 affects alignment and generation.",
+                                                "ar"
+                                            ],
+                                "question":  [
+                                                 "How does your model handle \u0027Latent abstraction\u0027?",
+                                                 "ar"
+                                             ],
+                                "context":  [
+                                                "Exploring \u0027Latent abstraction\u0027 in model reasoning.",
+                                                "ar"
+                                            ]
+                            },
+                     "es":  {
+                                "title":  [
+                                              "Latent abstraction",
+                                              "es"
+                                          ],
+                                "recommendation":  [
+                                                       "Design models to adapt to \u0027Latent abstraction\u0027.",
+                                                       "es"
+                                                   ],
+                                "insight":  [
+                                                "\u0027Latent abstraction\u0027 affects alignment and generation.",
+                                                "es"
+                                            ],
+                                "question":  [
+                                                 "How does your model handle \u0027Latent abstraction\u0027?",
+                                                 "es"
+                                             ],
+                                "context":  [
+                                                "Exploring \u0027Latent abstraction\u0027 in model reasoning.",
+                                                "es"
+                                            ]
+                            }
+                 },
+    "timestamp":  "2025-07-21T21:18:38",
+    "meta":  {
+                 "license":  "OGL-1.0",
+                 "alignmentPurpose":  "multilingual generalization and ethical scaffolding",
+                 "generatedBy":  "PROTOCORE Final"
+             },
+    "topic":  "Latent abstraction",
+    "languages":  [
+                      "en",
+                      "fr",
+                      "ar",
+                      "es",
+                      "zh"
+                  ]
+}
